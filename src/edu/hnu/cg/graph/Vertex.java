@@ -1,7 +1,5 @@
 package edu.hnu.cg.graph;
 
-import java.awt.GraphicsConfigTemplate;
-
 import sun.misc.Unsafe;
 import edu.hnu.cg.graph.datablocks.BytesToValueConverter;
 import edu.hnu.cg.graph.datablocks.DataBlockManager;
@@ -74,9 +72,7 @@ public class Vertex<VertexValue, EdgeValue> {
 				e.printStackTrace();
 			}
 			
-			if(_id < 0){
-				throw new Illegal
-			}
+			
 		}
 	}
 
