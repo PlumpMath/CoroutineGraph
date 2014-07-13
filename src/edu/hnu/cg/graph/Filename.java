@@ -29,6 +29,9 @@ public class Filename {
 	public static String getSectionShovelFilename(String filename, int sectionid) {
 		return filename + "." + sectionid + ".shovel";
 	}
+	public static String getSectionVertexShovelFilename(String filename,int sectionid){
+		return filename + "." + sectionid+".vertex"+".shovel";
+	}
 
 	public static String getSectionFetchIndexFilename(String filename, int sectionid) {
 		return filename + "." + sectionid + ".index";

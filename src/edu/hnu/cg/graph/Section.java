@@ -40,7 +40,7 @@ public class Section {
 		id = _id;
 		sectionFilename = _sectionFilename;
 		vertexDataFilename = Filename.getSectionVertexDataFilename(sectionFilename, id);
-		dgeDataFilename = Filename.getSectionEdgeDataFilename(sectionFilename, superstep, id);
+		//dgeDataFilename = Filename.getSectionEdgeDataFilename(sectionFilename, superstep, id);
 		init();
 	}
 

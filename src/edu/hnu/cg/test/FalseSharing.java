@@ -2,22 +2,21 @@ package edu.hnu.cg.test;
 public final class FalseSharing
     implements Runnable
 {
-    public final static int NUM_THREADS = 4; // change
+    public final static int NUM_THREADS = 100; // change
     public final static long ITERATIONS = 50L * 1000L * 1000L;
     private final int arrayIndex;
  
-    private static VolatileLong[] longs = new VolatileLong[NUM_THREADS];
+    private static long[] longs = new long[NUM_THREADS*15];
     static
     {
         for (int i = 0; i < longs.length; i++)
         {
-            longs[i] = new VolatileLong();
         }
     }
  
     public FalseSharing(final int arrayIndex)
     {
-        this.arrayIndex = arrayIndex;
+        this.arrayIndex = arrayIndex*8+7;
     }
  
     public static void main(final String[] args) throws Exception
@@ -55,12 +54,13 @@ public final class FalseSharing
         long i = ITERATIONS + 1;
         while (0 != --i)
         {
-            longs[arrayIndex].value = i;
+            longs[arrayIndex] = i;
         }
     }
  
     public final static class VolatileLong
     {
+        //public long p1, p2, p3, p4, p5, p6,p7; // comment out
         public volatile long value = 0L;
         //public long p1, p2, p3, p4, p5, p6,p7; // comment out
     }

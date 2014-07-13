@@ -15,11 +15,12 @@ import java.util.StringTokenizer;
 import edu.hnu.cg.graph.datablocks.BytesToValueConverter;
 import edu.hnu.cg.graph.datablocks.FloatConverter;
 import edu.hnu.cg.graph.preprocessing.EdgeProcessor;
+import edu.hnu.cg.graph.preprocessing.MessageProcessor;
 import edu.hnu.cg.graph.preprocessing.VertexProcessor;
 import edu.hnu.cg.graph.userdefine.GraphConfig;
 import edu.hnu.cg.util.BufferedDataInputStream;
 
-public class Graph<VertexValueType extends Number, EdgeValueType extends Number> {
+public class Graph<VertexValueType extends Number, EdgeValueType extends Number, MsgValueType> {
 
 	public enum graphFormat {
 		EDGELIST, ADJACENCY
@@ -34,6 +35,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 	private EdgeProcessor<EdgeValueType> edgeProcessor;
 	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;
 	private BytesToValueConverter<VertexValueType> verterxValueTypeBytesToValueConverter;
+	private BytesToValueConverter<MsgValueType> msgValueTypeBytesToValueConverter;
 
 	private byte[] vertexValueTemplate;
 	private byte[] edgeValueTemplate;
@@ -41,6 +43,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 	private static int sectionSize;
 	private static int numVertices;
 	private static int numSections;
+	private static byte[] cachelineTemplate;
 
 	static {
 		sectionSize = GraphConfig.sectionSize;
@@ -50,17 +53,20 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 			numSections = numVertices / sectionSize;
 		else
 			numSections = numVertices / sectionSize + 1;
+
+		cachelineTemplate = new byte[GraphConfig.cachelineSize];
 	}
 
 	private DataOutputStream[] sectionAdjWriter; // section的邻接表文件输出流
 	private DataOutputStream[] sectionVDataWriter;// 存储本section内顶点的value
 	private DataOutputStream[] sectioEDataWriter;// 存储本section内与边相关的消息的文件
 	private DataOutputStream[] sectionShovelWriter;
+	private DataOutputStream[] sectionVertexValueShovelWriter;
 	private DataOutputStream[] sectionFetchIndexWriter;
 	private BufferedDataInputStream[] sectionShovelReader;
 	private BufferedDataInputStream[] sectionVDataReader;
 	private BufferedDataInputStream[] sectionAdjReader;
-	
+
 	private int[] inSectionEdgeCounters;
 	private int[] outSectionEdgeCounters;
 
@@ -76,18 +82,18 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 		sectioEDataWriter = new DataOutputStream[numSections];
 		sectionShovelWriter = new DataOutputStream[numSections];
 		sectionFetchIndexWriter = new DataOutputStream[numSections];
-		
+		sectionVertexValueShovelWriter = new DataOutputStream[numSections];
+
 		inSectionEdgeCounters = new int[numSections];
 		outSectionEdgeCounters = new int[numSections];
 
 		for (int i = 0; i < numSections; i++) {
 			sectionAdjWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionFilename(graphFilename, i))));
-			sectionVDataWriter[i] = new DataOutputStream(
-					new BufferedOutputStream(new FileOutputStream(Filename.getSectionVertexDataFilename(graphFilename, i))));
+			sectionVDataWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionVertexDataFilename(graphFilename, i))));
 			sectioEDataWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionEdgeDataFilename(graphFilename, i))));
 			sectionShovelWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionShovelFilename(graphFilename, i))));
-			sectionFetchIndexWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionFetchIndexFilename(
-					graphFilename, i))));
+			sectionFetchIndexWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionFetchIndexFilename(graphFilename, i))));
+			sectionVertexValueShovelWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionVertexShovelFilename(graphFilename, i))));
 		}
 
 	}
@@ -153,7 +159,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 				lnNum++;
 				if (lnNum % 1000000 == 0)
 					System.out.println("Reading line:" + lnNum);
-				long[] res = extractLine(ln);
+				extractLine(ln);
 				/*
 				 * int sectionid = forward(getFirst(res[0])); for (long l : res)
 				 * sectionAdjWriter[sectionid].writeLong(l);
@@ -170,16 +176,24 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 
 	public void process() throws IOException {
 
-		int sizeof = (edgeValueTypeBytesToValueConverter != null ? edgeValueTypeBytesToValueConverter.sizeOf() : 0);
-		int sizeofValue = (edgeValueTypeBytesToValueConverter != null ? edgeValueTypeBytesToValueConverter.sizeOf() : 4);
+		int sizeof = (edgeValueTypeBytesToValueConverter != null ? edgeValueTypeBytesToValueConverter.sizeOf() : 0); // 边上的值的大小
+		int sizeofValue = (verterxValueTypeBytesToValueConverter != null ? verterxValueTypeBytesToValueConverter.sizeOf() : 4);// 顶点值的size大小
+		//int msgSize = (msgValueTypeBytesToValueConverter !=null ? msgValueTypeBytesToValueConverter.sizeOf() : 16); // id id value
+		int cachelineSize = GraphConfig.cachelineSize;
+		
+		byte[] offsetTypeTemplate = new byte[4];
 
 		for (int i = 0; i < numSections; i++) {
-			File edgeFile = new File(Filename.getCompactEdgeFilename(graphFilename));
+			File shovelFile = new File(Filename.getSectionShovelFilename(graphFilename, i));
+			File vertexShovleFile = new File(Filename.getSectionVertexShovelFilename(graphFilename, i));
 
-			long[] edges = new long[(int) edgeFile.length() / (8 + sizeof)];
+			long[] edges = new long[(int) shovelFile.length() / (8 + sizeof)];
 			byte[] edgeValues = new byte[edges.length * sizeof];
-
-			BufferedDataInputStream in = new BufferedDataInputStream(new FileInputStream(edgeFile));
+			
+			long[] vertices = new long[(int)vertexShovleFile.length() / (8+sizeofValue)];
+			byte[] vertexValues = new byte[vertices.length * sizeofValue];
+			
+			BufferedDataInputStream in = new BufferedDataInputStream(new FileInputStream(shovelFile));
 			for (int k = 0; k < edges.length; k++) {
 				long l = in.readLong();
 				edges[k] = l;
@@ -188,37 +202,50 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 			}
 			numEdges += edges.length;
 			in.close();
-			edgeFile.delete();
-
+			shovelFile.delete();
 			quickSort(edges, edgeValues, sizeof, 0, edges.length - 1);
+			
+			BufferedDataInputStream vin = new BufferedDataInputStream(new FileInputStream(vertexShovleFile));
+			
+			for(int k=0;k<vertices.length;k++){
+				long vid = vin.readLong();
+				vertices[k] = vid;
+				vin.readFully(vertexValueTemplate);
+				System.arraycopy(vertexValueTemplate, 0, vertexValues, k*sizeofValue, sizeofValue);
+			}
+			vin.close();
+			vertexShovleFile.delete();
+			quickSort(vertices,vertexValues,sizeofValue,0,vertices.length-1);
 
 			int currentInSectionOffset = 0;
 			int currentOutSectionOffset = 0;
 			int valueOffset = 0;
 			int curvid = 0;
 			int isstart = 0;
-			int inSectionEdgeCounter = 0;
-			int outSectionEdgeCounter = 0;
 			int fetchIndex = 0;
+			int currentPos = 0;
+			int valuePos = 0;
+			
+			int inSectionEdgeCounter = inSectionEdgeCounters[i];
+//			int outSectionEdgeCounter = outSectionEdgeCounters[i];
 
-			long[] inedgeIndexer = new long[inSectionEdgeCounters[i]];
+			long[] inedgeIndexer = new long[inSectionEdgeCounter];
+			byte[] inedgeValue = new byte[inSectionEdgeCounter*(sizeof+4)];
+			
 			currentInSectionOffset = 0;
+			int ic = 0;
 			for (int k = 0; k < edges.length; k++) {
 				int d_id = getSecond(edges[k]);
 				if (forward(d_id) == i) {
-					inedgeIndexer[inSectionEdgeCounter++] = pack(getSecond(edges[k]),getFirst(edges[k]));
+					inedgeIndexer[ic++] = pack(getSecond(edges[k]), getFirst(edges[k]));
+					System.arraycopy(edgeValues, k*sizeof, inedgeValue, ic*(sizeof+4), sizeof);
 				}
 			}
-			byte[] insectionOffsets = new byte[inSectionEdgeCounter * 4];
 			for (int k = 0; k < inSectionEdgeCounter; k++) {
-				//写入offset
-				System.arraycopy(intToByteArray(k), 0, insectionOffsets, k * 4, 4);
-				//写入边上的权值
-				//see you tomorrow
-				
+				System.arraycopy(intToByteArray(k*cachelineSize), 0, inedgeValue, (k *(sizeof+ 4) + sizeof), 4);
 			}
 
-			quickSort(inedgeIndexer, insectionOffsets, 4, 0, inSectionEdgeCounter - 1);
+			quickSort(inedgeIndexer, inedgeValue, sizeof+4, 0, inSectionEdgeCounter - 1);
 
 			/*
 			 * for(int k=0;k<inSectionEdgeCounter;k++){
@@ -226,17 +253,41 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 			 */
 
 			// 从边构建邻接表
-			for (int s = 0, m = 0; s < edges.length; s++) {
+			for (int s = 0; s < edges.length; s++) {
 				int from = getFirst(edges[s]);
-
+				
 				if (from != curvid) {
+					int tmp = currentPos;
 					int count = s - isstart;
+					
+					while(curvid == getFirst(inedgeIndexer[currentPos] )){
+						count++;
+						currentPos++;
+					}
+					
+					currentPos = tmp;
 
 					int length = count * (8 + sizeof) + 12;
 					// 写入record的头信息 : 长度 顶点id 顶点value的offset
 					sectionAdjWriter[i].writeInt(length);
 					sectionAdjWriter[i].writeInt(curvid);
 					sectionAdjWriter[i].write(valueOffset);
+					
+					assert(getFirst(vertices[valuePos]) == curvid);
+					
+					System.arraycopy(vertexValues, valuePos*sizeofValue, vertexValueTemplate, 0, sizeofValue);
+					sectionVDataWriter[i].write(vertexValueTemplate);
+					valuePos++;
+					
+					//写入在本分区内的入边的信息 id weight offset
+					while(curvid == getFirst(inedgeIndexer[currentPos] )){
+						sectionAdjWriter[i].writeInt(getSecond(inedgeIndexer[currentPos]));
+						System.arraycopy(inedgeValue, currentPos*(sizeof+4)	, edgeValueTemplate, 0, sizeof);
+						sectionAdjWriter[i].write(edgeValueTemplate);
+						System.arraycopy(inedgeValue,(currentPos *(sizeof+ 4) + sizeof),offsetTypeTemplate ,0 , 4);
+						sectionAdjWriter[i].writeInt(reverseOffset(byteArrayToInt(offsetTypeTemplate)));
+						currentPos++;
+					}
 
 					// 写入record的出边信息 id 权重 边offset
 					for (int p = isstart; p < s; p++) {
@@ -244,22 +295,22 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 						// 写入邻接边id
 						sectionAdjWriter[i].writeInt(Integer.reverseBytes(getSecond(edges[p])));
 						// 写入邻接边的权值
-						System.arraycopy(edgeValues, i * sizeof, edgeValueTemplate, 0, sizeof);
+						System.arraycopy(edgeValues,  p* sizeof, edgeValueTemplate, 0, sizeof);
 						sectionAdjWriter[i].write(edgeValueTemplate);
 						// 写入邻接边的offset
 						if (forward(getSecond(edges[p])) == i) {
-							sectionAdjWriter[i].writeInt(currentInSectionOffset++);
-							inSectionEdgeCounter++;
+							sectionAdjWriter[i].writeInt(currentInSectionOffset);
+							currentInSectionOffset += cachelineSize;
 						} else {
-							sectionAdjWriter[i].writeInt(currentOutSectionOffset++);
-							outSectionEdgeCounter++;
+							sectionAdjWriter[i].writeInt(currentOutSectionOffset);
+							currentOutSectionOffset += cachelineSize;
 						}
 					}
 
 					sectionFetchIndexWriter[i].writeInt(fetchIndex);
 
 					fetchIndex += length;
-					valueOffset += sizeofValue;
+					valueOffset += cachelineSize;
 
 					curvid = from;
 				}
@@ -267,13 +318,15 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 			}
 
 		}
+		
+		
+		
 
 	}
 
 	// 解析邻接表行，转换为合适的格式 vid-offset id-offset id-offset id-offset
-	private long[] extractLine(String line) {
-		long[] vline = null;
-		int len = 0;
+	// vid,val : id,val->id,val->id,val
+	private void extractLine(String line) {
 		String vertexPart = null;
 		String edgePart = null;
 		StringTokenizer st = new StringTokenizer(line, vertexToEdgeSeparate);
@@ -282,29 +335,22 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 
 		vertexPart = st.nextToken(); // id:value
 		if (tokens == 2)
-			edgePart = st.nextToken(); // id:value->id:value->id:value
+			edgePart = st.nextToken(); // id,value->id,value->id,value
 
-		if (vertexPart != null)
-			len++;
 		if (edgePart != null) {
 			est = new StringTokenizer(edgePart, edgeToEdgeSeparate);
-			len += est.countTokens();
 		}
 
-		vline = new long[len];
-		vline[0] = vidToValue(vertexPart);
+		int vid = getFirst(vidToValue(vertexPart));
 
-		int i = 1;
 		if (est != null) {
 			while (est.hasMoreTokens()) {
 				String p = est.nextToken();
-				vline[i++] = eidToValue(p, getFirst(vline[0]));
+				eidToValue(p, vid);
 			}
 		}
-		return vline;
 	}
 
-	
 	private long eidToValue(String part, int from) {
 
 		StringTokenizer st = new StringTokenizer(part, idToValueSeparate);
@@ -329,35 +375,37 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 				e.printStackTrace();
 			}
 		}
-		
+
 		int sectionid = forward(from);
-		
-		if(forward(to) == sectionid){
+
+		if (forward(to) == sectionid) {
 			inSectionEdgeCounters[sectionid]++;
-		}else{
+		} else {
 			outSectionEdgeCounters[sectionid]++;
 		}
-		
+
 		return pack(to, 0);
 	}
 
 	private long vidToValue(String part) {
 		StringTokenizer st = new StringTokenizer(part, idToValueSeparate);
+		int tokens = st.countTokens();
 		int from = -1;
 		String token = null;
-		if (st.countTokens() == 2) {
-			from = Integer.parseInt(st.nextToken());
-			token = st.nextToken();
-			if (vertexProcessor != null) {
-				try {
-					this.addEdge(from, from, token);
-				} catch (NumberFormatException | IOException e) {
-					e.printStackTrace();
-				}
-			}
+		from = Integer.parseInt(st.nextToken());
 
-		} else if (st.countTokens() == 1) {
-			from = Integer.parseInt(st.nextToken());
+		if (tokens == 2)
+			token = st.nextToken();
+
+		if (token != null) {
+				if(vertexProcessor!=null){
+					VertexValueType value = vertexProcessor.receiveVertexValue(from, token);
+					try{
+						addVertexValue(from, value);
+					}catch(IOException e){
+						e.printStackTrace();
+					}
+				}
 		}
 
 		return pack(from, 0);
@@ -385,15 +433,6 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 	}
 
 	public void addEdge(int from, int to, String token) throws IOException {
-		if (from == to) {
-			if (vertexProcessor != null && token != null) {
-				VertexValueType value = vertexProcessor.receiveVertexValue(from, token);
-				if (value != null) {
-					addVertexValue(from, value);
-				}
-			}
-			return;
-		}
 		addToShovel(from, to, (edgeProcessor != null ? edgeProcessor.receiveEdge(from, to, token) : null));
 	}
 
@@ -406,12 +445,12 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number>
 		sectionShovelWriter[section].write(edgeValueTemplate);
 	}
 
-	public void addVertexValue(int from, VertexValueType value) throws IOException {
-		int section = forward(from);
-		sectionVDataWriter[section].writeInt(from);
-		verterxValueTypeBytesToValueConverter.setValue(vertexValueTemplate, value);
-		sectionVDataWriter[section].write(vertexValueTemplate);
-	}
+	 public void addVertexValue(int from, VertexValueType value) throws IOException {
+		 int section = forward(from);
+		 sectionVertexValueShovelWriter[section].writeLong(pack(from,0));
+		 verterxValueTypeBytesToValueConverter.setValue(vertexValueTemplate, value);
+		 sectionVertexValueShovelWriter[section].write(vertexValueTemplate);
+	 }
 
 	private static Random random = new Random();
 
