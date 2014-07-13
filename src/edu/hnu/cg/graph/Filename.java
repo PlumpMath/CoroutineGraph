@@ -22,8 +22,8 @@ public class Filename {
 		return filename + "." + sectionid + ".vdata";
 	}
 
-	public static String getSectionEdgeDataFilename(String filename, int sectionid) {
-		return filename + "." + sectionid + ".edata";
+	public static String getSectionEdgeDataFilename(String filename, int sectionid,int superstep) {
+		return filename + "." + sectionid +"-" + superstep+  ".edata";
 	}
 
 	public static String getSectionShovelFilename(String filename, int sectionid) {

@@ -19,6 +19,7 @@ public class Section {
 	private String sectionFilename;
 	private String vertexDataFilename;
 	private String edgeDataFilename;
+	private String fetchIndexFilename;
 
 	private RandomAccessFile sectionFile;
 	private MappedByteBuffer vertexInformationBuffer;
@@ -31,35 +32,31 @@ public class Section {
 	private RandomAccessFile edgeDataFile;
 	private MappedByteBuffer edgeDataBuffer;
 	private FileChannel edgeDataFileChannel;
+	
+	private RandomAccessFile fetchIndexFile;
+	private MappedByteBuffer indexBuffer;
+	private FileChannel indexChannel;
 
 	private volatile boolean loaded = false;
 	private volatile boolean unloaded = false;
-	private boolean isPreprocess = true;
 
-	public Section(int _id, String _sectionFilename, String _vertexDataFile, String _edgeDataFile) {
+	public Section(int _id,String graphFiename) throws IOException {
 		id = _id;
-		sectionFilename = _sectionFilename;
-		vertexDataFilename = Filename.getSectionVertexDataFilename(sectionFilename, id);
-		//dgeDataFilename = Filename.getSectionEdgeDataFilename(sectionFilename, superstep, id);
-		init();
+		superstep = 0;
+		sectionFilename = Filename.getSectionFilename(graphFiename, id);
+		vertexDataFilename = Filename.getSectionVertexDataFilename(graphFiename, id);
+		edgeDataFilename = Filename.getSectionEdgeDataFilename(graphFiename, id, superstep);
+		fetchIndexFilename = Filename.getSectionFetchIndexFilename(graphFiename, id);
+		
+		sectionFile = new RandomAccessFile(sectionFilename, "r");
+		vertexDataFile = new RandomAccessFile(vertexDataFilename,"rw");
+		edgeDataFile = new RandomAccessFile(edgeDataFilename,"rw");
+		fetchIndexFile = new RandomAccessFile(fetchIndexFilename,"r");
+	
 	}
 
 	public void setSuperstep(int step) {
 		superstep = step;
-	}
-
-	public void init() {
-		try {
-			sectionFile = new RandomAccessFile(new File(sectionFilename), "rw");
-			vertexDataFile = new RandomAccessFile(new File(vertexDataFilename), "rw");
-			edgeDataFile = new RandomAccessFile(new File(edgeDataFilename), "rw");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void addVertex(String record) {
-
 	}
 
 	// if this method is called , null pointer needed to be checked
@@ -79,15 +76,22 @@ public class Section {
 		// 载入section信息文件
 		if (sectionFile != null) {
 			vertexInfoFileChannel = sectionFile.getChannel();
-			vertexInformationBuffer = vertexInfoFileChannel.map((isPreprocess ? MapMode.READ_WRITE : MapMode.READ_ONLY), 0, sectionFile.length());
+			vertexInformationBuffer = vertexInfoFileChannel.map( MapMode.READ_ONLY, 0, sectionFile.length());
 		} else {
 			return;
+		}
+		
+		if(fetchIndexFile!=null){
+			indexChannel = fetchIndexFile.getChannel();
+			indexBuffer = indexChannel.map(MapMode.READ_ONLY, 0, fetchIndexFile.length());
+		}else{
+			return ;
 		}
 
 		// 载入顶点value数据文件
 		if (vertexDataFile != null) {
 			vertexDataFileChannel = vertexDataFile.getChannel();
-			vertexDataBuffer = vertexDataFileChannel.map(MapMode.READ_ONLY, 0, vertexDataFile.length());
+			vertexDataBuffer = vertexDataFileChannel.map(MapMode.READ_WRITE, 0, vertexDataFile.length());
 		} else {
 			return;
 		}
@@ -136,14 +140,17 @@ public class Section {
 		sectionFile.close();
 		vertexDataFile.close();
 		edgeDataFile.close();
+		fetchIndexFile.close();
 
 		vertexInfoFileChannel.close();
 		vertexDataFileChannel.close();
 		edgeDataFileChannel.close();
+		indexChannel.close();
 
 		clean(vertexInformationBuffer);
 		clean(vertexDataBuffer);
 		clean(edgeDataBuffer);
+		clean(indexBuffer);
 
 		unloaded = true;
 		loaded = false;

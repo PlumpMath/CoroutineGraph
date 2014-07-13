@@ -13,9 +13,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import edu.hnu.cg.graph.datablocks.BytesToValueConverter;
-import edu.hnu.cg.graph.datablocks.FloatConverter;
 import edu.hnu.cg.graph.preprocessing.EdgeProcessor;
-import edu.hnu.cg.graph.preprocessing.MessageProcessor;
 import edu.hnu.cg.graph.preprocessing.VertexProcessor;
 import edu.hnu.cg.graph.userdefine.GraphConfig;
 import edu.hnu.cg.util.BufferedDataInputStream;
@@ -29,13 +27,11 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 	private String graphFilename;
 	private graphFormat format;
 	private long numEdges = 0;
-	private DataOutputStream eStream;
-	private DataOutputStream vStream;
 	private VertexProcessor<VertexValueType> vertexProcessor;
 	private EdgeProcessor<EdgeValueType> edgeProcessor;
 	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;
 	private BytesToValueConverter<VertexValueType> verterxValueTypeBytesToValueConverter;
-	private BytesToValueConverter<MsgValueType> msgValueTypeBytesToValueConverter;
+//	private BytesToValueConverter<MsgValueType> msgValueTypeBytesToValueConverter;
 
 	private byte[] vertexValueTemplate;
 	private byte[] edgeValueTemplate;
@@ -43,7 +39,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 	private static int sectionSize;
 	private static int numVertices;
 	private static int numSections;
-	private static byte[] cachelineTemplate;
+//	private static byte[] cachelineTemplate
 
 	static {
 		sectionSize = GraphConfig.sectionSize;
@@ -54,32 +50,36 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 		else
 			numSections = numVertices / sectionSize + 1;
 
-		cachelineTemplate = new byte[GraphConfig.cachelineSize];
+//		cachelineTemplate = new byte[GraphConfig.cachelineSize];
 	}
 
 	private DataOutputStream[] sectionAdjWriter; // section的邻接表文件输出流
 	private DataOutputStream[] sectionVDataWriter;// 存储本section内顶点的value
-	private DataOutputStream[] sectioEDataWriter;// 存储本section内与边相关的消息的文件
+//	private DataOutputStream[] sectioEDataWriter;// 存储本section内与边相关的消息的文件
 	private DataOutputStream[] sectionShovelWriter;
 	private DataOutputStream[] sectionVertexValueShovelWriter;
 	private DataOutputStream[] sectionFetchIndexWriter;
-	private BufferedDataInputStream[] sectionShovelReader;
-	private BufferedDataInputStream[] sectionVDataReader;
-	private BufferedDataInputStream[] sectionAdjReader;
 
 	private int[] inSectionEdgeCounters;
 	private int[] outSectionEdgeCounters;
 
-	public Graph(String filename, String _format) throws FileNotFoundException {
+	public Graph(String filename, String _format,BytesToValueConverter<EdgeValueType> _edgeValueTypeBytesToValueConverter,
+			BytesToValueConverter<VertexValueType> _verterxValueTypeBytesToValueConverter, VertexProcessor<VertexValueType> _vertexProcessor,
+			EdgeProcessor<EdgeValueType> _edgeProcessor) throws FileNotFoundException {
 		graphFilename = filename;
 		if (_format.equals("edgelist"))
 			format = graphFormat.EDGELIST;
 		else if (_format.equals("adjacency"))
 			format = graphFormat.ADJACENCY;
+		
+		vertexProcessor = _vertexProcessor;
+		edgeProcessor = _edgeProcessor;
+		edgeValueTypeBytesToValueConverter = _edgeValueTypeBytesToValueConverter;
+		verterxValueTypeBytesToValueConverter = _verterxValueTypeBytesToValueConverter;
 
 		sectionAdjWriter = new DataOutputStream[numSections];
 		sectionVDataWriter = new DataOutputStream[numSections];
-		sectioEDataWriter = new DataOutputStream[numSections];
+//		sectioEDataWriter = new DataOutputStream[numSections];
 		sectionShovelWriter = new DataOutputStream[numSections];
 		sectionFetchIndexWriter = new DataOutputStream[numSections];
 		sectionVertexValueShovelWriter = new DataOutputStream[numSections];
@@ -90,30 +90,12 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 		for (int i = 0; i < numSections; i++) {
 			sectionAdjWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionFilename(graphFilename, i))));
 			sectionVDataWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionVertexDataFilename(graphFilename, i))));
-			sectioEDataWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionEdgeDataFilename(graphFilename, i))));
+//			sectioEDataWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionEdgeDataFilename(graphFilename, i))));
 			sectionShovelWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionShovelFilename(graphFilename, i))));
 			sectionFetchIndexWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionFetchIndexFilename(graphFilename, i))));
 			sectionVertexValueShovelWriter[i] = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getSectionVertexShovelFilename(graphFilename, i))));
 		}
-
-	}
-
-	public Graph(String filename, String _format, BytesToValueConverter<EdgeValueType> _edgeValueTypeBytesToValueConverter,
-			BytesToValueConverter<VertexValueType> _verterxValueTypeBytesToValueConverter, VertexProcessor<VertexValueType> _vertexProcessor,
-			EdgeProcessor<EdgeValueType> _edgeProcessor) throws IOException {
-
-		graphFilename = filename;
-		if (_format.equals("edgelist"))
-			format = graphFormat.EDGELIST;
-		else if (_format.equals("adjacency"))
-			format = graphFormat.ADJACENCY;
-		vertexProcessor = _vertexProcessor;
-		edgeProcessor = _edgeProcessor;
-		edgeValueTypeBytesToValueConverter = _edgeValueTypeBytesToValueConverter;
-		verterxValueTypeBytesToValueConverter = _verterxValueTypeBytesToValueConverter;
-		eStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Filename.getCompactEdgeFilename(filename))));
-		// vStream = new DataOutputStream(new BufferedOutputStream(new
-		// FileOutputStream(Filename.getVertexDataFilename(filename))));
+		
 		if (edgeValueTypeBytesToValueConverter != null) {
 			edgeValueTemplate = new byte[edgeValueTypeBytesToValueConverter.sizeOf()];
 		} else {
@@ -128,10 +110,11 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 
 	}
 
+
 	private static final String vertexToEdgeSeparate = ":";
 	private static final String idToValueSeparate = ",";
 	private static final String edgeToEdgeSeparate = "->";
-	private static final long recordSep = 0xFFFFFFFFFFFFFFFFL;
+//	private static final long recordSep = 0xFFFFFFFFFFFFFFFFL;
 
 	public void XXXX() throws IOException {
 		BufferedReader bReader = new BufferedReader(new FileReader((new File(graphFilename))));
@@ -319,7 +302,11 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 
 		}
 		
-		
+		for(int i=0;i<numSections;i++){
+			sectionAdjWriter[i].close();
+			sectionVDataWriter[i].close();
+			sectionFetchIndexWriter[i].close();
+		}
 		
 
 	}
