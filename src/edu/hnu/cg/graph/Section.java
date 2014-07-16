@@ -20,6 +20,9 @@ public class Section {
 	private String vertexDataFilename;
 	private String edgeDataFilename;
 	private String fetchIndexFilename;
+	
+	private long valueSize;
+	private long edataSize;
 
 	private RandomAccessFile sectionFile;
 	private MappedByteBuffer vertexInformationBuffer;
@@ -40,9 +43,12 @@ public class Section {
 	private volatile boolean loaded = false;
 	private volatile boolean unloaded = false;
 
-	public Section(int _id,String graphFiename) throws IOException {
+	public Section(int _id,String graphFiename,long vsize ,long esize) throws IOException {
 		id = _id;
 		superstep = 0;
+		valueSize = vsize;
+		edataSize = esize;
+		
 		sectionFilename = Filename.getSectionFilename(graphFiename, id);
 		vertexDataFilename = Filename.getSectionVertexDataFilename(graphFiename, id);
 		edgeDataFilename = Filename.getSectionEdgeDataFilename(graphFiename, id, superstep);
@@ -71,35 +77,44 @@ public class Section {
 	public MappedByteBuffer getEdgeDataBuffer() {
 		return edgeDataBuffer;
 	}
+	
+	private void mmap(RandomAccessFile raf ,FileChannel fc , MappedByteBuffer buffer ,MapMode mode , long start,long end) throws IOException{
+		fc = raf.getChannel();
+		buffer = fc.map(mode, start, end);
+	}
 
 	public void load() throws IOException {
 		// 载入section信息文件
 		if (sectionFile != null) {
-			vertexInfoFileChannel = sectionFile.getChannel();
-			vertexInformationBuffer = vertexInfoFileChannel.map( MapMode.READ_ONLY, 0, sectionFile.length());
+			mmap(sectionFile,vertexInfoFileChannel,vertexInformationBuffer,MapMode.READ_ONLY, 0, sectionFile.length());
 		} else {
 			return;
 		}
 		
 		if(fetchIndexFile!=null){
-			indexChannel = fetchIndexFile.getChannel();
-			indexBuffer = indexChannel.map(MapMode.READ_ONLY, 0, fetchIndexFile.length());
+			mmap(fetchIndexFile,indexChannel,indexBuffer,MapMode.READ_ONLY,0,fetchIndexFile.length());
 		}else{
 			return ;
 		}
 
 		// 载入顶点value数据文件
 		if (vertexDataFile != null) {
-			vertexDataFileChannel = vertexDataFile.getChannel();
-			vertexDataBuffer = vertexDataFileChannel.map(MapMode.READ_WRITE, 0, vertexDataFile.length());
+			if(vertexDataFile.length()==0){
+				mmap(vertexDataFile,vertexDataFileChannel,vertexDataBuffer,MapMode.READ_ONLY,0,valueSize);
+			}else{
+				mmap(vertexDataFile,vertexDataFileChannel,vertexDataBuffer,MapMode.READ_ONLY,0,vertexDataFile.length());
+			}
+			
 		} else {
 			return;
 		}
 
-		// 载入边权重(消息数据)文件
 		if (edgeDataFile != null) {
-			edgeDataFileChannel = edgeDataFile.getChannel();
-			edgeDataBuffer = edgeDataFileChannel.map(MapMode.READ_WRITE, 0, edgeDataFile.length());
+			if(edgeDataFile.length() == 0){
+				mmap(edgeDataFile,edgeDataFileChannel,edgeDataBuffer,MapMode.READ_ONLY,0,edataSize);
+			}else{
+				mmap(edgeDataFile,edgeDataFileChannel,edgeDataBuffer,MapMode.READ_ONLY,0,edgeDataFile.length());
+			}
 		} else {
 			return;
 		}

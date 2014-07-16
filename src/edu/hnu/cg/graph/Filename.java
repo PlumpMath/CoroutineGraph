@@ -11,8 +11,8 @@ public class Filename {
 		return filename + ".vdeg.bin";
 	}
 
-	public static String getSectionFilename(String filname, int partitionId) {
-		return filname + ".par." + partitionId;
+	public static String getSectionFilename(String filname, int sectionid) {
+		return filname + "." + sectionid+".section";
 	}
 
 	// 获得某个section 所对应的顶点值的文件
