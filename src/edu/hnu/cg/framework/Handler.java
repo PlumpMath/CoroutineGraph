@@ -1,5 +1,5 @@
 package edu.hnu.cg.framework;
 
-public interface Handler {
-	void compute();
+public interface Handler<MsgValueType> {
+	void compute(MsgValueType msg);
 }

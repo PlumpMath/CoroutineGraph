@@ -1,6 +1,6 @@
 package edu.hnu.cg.graph;
 
-import java.io.File;
+//import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
@@ -9,7 +9,6 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.MappedByteBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
 
 public class Section {
 
@@ -20,9 +19,10 @@ public class Section {
 	private String vertexDataFilename;
 	private String edgeDataFilename;
 	private String fetchIndexFilename;
-	
+
 	private long valueSize;
 	private long edataSize;
+	
 
 	private RandomAccessFile sectionFile;
 	private MappedByteBuffer vertexInformationBuffer;
@@ -35,7 +35,7 @@ public class Section {
 	private RandomAccessFile edgeDataFile;
 	private MappedByteBuffer edgeDataBuffer;
 	private FileChannel edgeDataFileChannel;
-	
+
 	private RandomAccessFile fetchIndexFile;
 	private MappedByteBuffer indexBuffer;
 	private FileChannel indexChannel;
@@ -43,22 +43,23 @@ public class Section {
 	private volatile boolean loaded = false;
 	private volatile boolean unloaded = false;
 
-	public Section(int _id,String graphFiename,long vsize ,long esize) throws IOException {
+	public Section(int _id, String graphFiename, long vsize, long esize) throws IOException {
 		id = _id;
 		superstep = 0;
 		valueSize = vsize;
 		edataSize = esize;
 		
+
 		sectionFilename = Filename.getSectionFilename(graphFiename, id);
 		vertexDataFilename = Filename.getSectionVertexDataFilename(graphFiename, id);
 		edgeDataFilename = Filename.getSectionEdgeDataFilename(graphFiename, id, superstep);
 		fetchIndexFilename = Filename.getSectionFetchIndexFilename(graphFiename, id);
-		
+
 		sectionFile = new RandomAccessFile(sectionFilename, "r");
-		vertexDataFile = new RandomAccessFile(vertexDataFilename,"rw");
-		edgeDataFile = new RandomAccessFile(edgeDataFilename,"rw");
-		fetchIndexFile = new RandomAccessFile(fetchIndexFilename,"r");
-	
+		vertexDataFile = new RandomAccessFile(vertexDataFilename, "rw");
+		edgeDataFile = new RandomAccessFile(edgeDataFilename, "rw");
+		fetchIndexFile = new RandomAccessFile(fetchIndexFilename, "r");
+
 	}
 
 	public void setSuperstep(int step) {
@@ -77,43 +78,53 @@ public class Section {
 	public MappedByteBuffer getEdgeDataBuffer() {
 		return edgeDataBuffer;
 	}
-	
-	private void mmap(RandomAccessFile raf ,FileChannel fc , MappedByteBuffer buffer ,MapMode mode , long start,long end) throws IOException{
-		fc = raf.getChannel();
-		buffer = fc.map(mode, start, end);
+	public MappedByteBuffer getIndexBuffer() {
+		return indexBuffer;
 	}
 
 	public void load() throws IOException {
 		// 载入section信息文件
 		if (sectionFile != null) {
-			mmap(sectionFile,vertexInfoFileChannel,vertexInformationBuffer,MapMode.READ_ONLY, 0, sectionFile.length());
+			vertexInfoFileChannel = sectionFile.getChannel();
+			vertexInformationBuffer = vertexInfoFileChannel.map(MapMode.READ_ONLY, 0, sectionFile.length());
+			vertexInformationBuffer.position(0);
 		} else {
 			return;
 		}
-		
-		if(fetchIndexFile!=null){
-			mmap(fetchIndexFile,indexChannel,indexBuffer,MapMode.READ_ONLY,0,fetchIndexFile.length());
-		}else{
-			return ;
+
+		if (fetchIndexFile != null) {
+			indexChannel = fetchIndexFile.getChannel();
+			indexBuffer = indexChannel.map(MapMode.READ_ONLY, 0, fetchIndexFile.length());
+			indexBuffer.position(0);
+		} else {
+			return;
 		}
 
 		// 载入顶点value数据文件
 		if (vertexDataFile != null) {
-			if(vertexDataFile.length()==0){
-				mmap(vertexDataFile,vertexDataFileChannel,vertexDataBuffer,MapMode.READ_ONLY,0,valueSize);
-			}else{
-				mmap(vertexDataFile,vertexDataFileChannel,vertexDataBuffer,MapMode.READ_ONLY,0,vertexDataFile.length());
+			if (vertexDataFile.length() == 0) {
+				vertexDataFileChannel = vertexDataFile.getChannel();
+				vertexDataBuffer = vertexDataFileChannel.map(MapMode.READ_ONLY, 0, valueSize);
+				vertexDataBuffer.position(0);
+			} else {
+				vertexDataFileChannel = vertexDataFile.getChannel();
+				vertexDataBuffer = vertexDataFileChannel.map(MapMode.READ_ONLY, 0, vertexDataFile.length());
+				vertexDataBuffer.position(0);
 			}
-			
+
 		} else {
 			return;
 		}
 
 		if (edgeDataFile != null) {
-			if(edgeDataFile.length() == 0){
-				mmap(edgeDataFile,edgeDataFileChannel,edgeDataBuffer,MapMode.READ_ONLY,0,edataSize);
-			}else{
-				mmap(edgeDataFile,edgeDataFileChannel,edgeDataBuffer,MapMode.READ_ONLY,0,edgeDataFile.length());
+			if (edgeDataFile.length() == 0) {
+				edgeDataFileChannel = edgeDataFile.getChannel();
+				edgeDataBuffer = edgeDataFileChannel.map(MapMode.READ_ONLY, 0, edataSize);
+				edgeDataBuffer.position(0);
+			} else {
+				edgeDataFileChannel = edgeDataFile.getChannel();
+				edgeDataBuffer = edgeDataFileChannel.map(MapMode.READ_ONLY, 0, edgeDataFile.length());
+				edgeDataBuffer.position(0);
 			}
 		} else {
 			return;
@@ -151,7 +162,6 @@ public class Section {
 		vertexDataBuffer.force();
 		edgeDataBuffer.force();
 
-		
 		sectionFile.close();
 		vertexDataFile.close();
 		edgeDataFile.close();
@@ -174,6 +184,39 @@ public class Section {
 
 	public boolean isUnloaded() {
 		return unloaded;
+	}
+
+	public static void main(String[] args) throws IOException {
+		Section section = new Section(0, "/home/doro/CG/google", 473524992, 73094740);
+		section.load();
+		for(int k=0;k<100;k++){
+			section.indexBuffer.get(k*10);
+			System.out.println(section.indexBuffer.position());
+		}
+			
+
+		int i = 0;
+		while (section.vertexInformationBuffer.remaining() >0) {
+			int len = section.vertexInformationBuffer.getInt();
+			System.out.print("Recorde " + i + " : " + len + ",");
+			int vid = section.vertexInformationBuffer.getInt();
+			System.out.print(vid + ",");
+			long valueOffset = section.vertexInformationBuffer.getInt();
+			System.out.print(valueOffset);
+			int k = 0;
+			while (k < (len - 12) / 8) {
+				int d_id = section.vertexInformationBuffer.getInt();
+				System.out.print("->" + d_id);
+				long offset = section.vertexInformationBuffer.getInt();
+				System.out.print("," + offset);
+				k++;
+			}
+			System.out.println();
+			i++;
+			
+		}
+
+		section.unload();
 	}
 
 }

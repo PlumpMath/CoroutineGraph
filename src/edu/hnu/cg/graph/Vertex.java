@@ -6,12 +6,12 @@ import edu.hnu.cg.graph.datablocks.DataBlockManager;
 import edu.hnu.cg.graph.datablocks.Pointer;
 import edu.hnu.cg.graph.datablocks.VertexDegree;
 import edu.hnu.cg.graph.userdefine.GraphConfig;
-import edu.hnu.cg.util.Tools;
+import edu.hnu.cg.util.Helper;
 
 @SuppressWarnings("restriction")
 public class Vertex<VertexValue, EdgeValue> {
 
-	public static final Unsafe unsafe = Tools.getUnsafe();
+	public static final Unsafe unsafe = Helper.getUnsafe();
 	@SuppressWarnings("unused")
 	private static final long vertex_id_offset;
 	@SuppressWarnings("unused")

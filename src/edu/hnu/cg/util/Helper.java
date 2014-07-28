@@ -1,10 +1,13 @@
 package edu.hnu.cg.util;
 import java.lang.reflect.Field;
 import java.security.PrivilegedExceptionAction;
+import java.util.Random;
+
+import edu.hnu.cg.graph.userdefine.GraphConfig;
 
 import sun.misc.Unsafe;
 @SuppressWarnings("restriction")
-public class Tools {
+public class Helper {
 
 	public static Unsafe getUnsafe(){
 		return THE_UNSAFE;
@@ -27,4 +30,7 @@ public class Tools {
 			throw new RuntimeException("Unable to load unsafe",e);
 		}
 	}
+	
+	
+	
 }
