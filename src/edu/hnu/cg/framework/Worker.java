@@ -1,31 +1,28 @@
 package edu.hnu.cg.framework;
 
 import java.nio.MappedByteBuffer;
-import java.util.Arrays;
 
 import edu.hnu.cg.graph.Graph;
 import edu.hnu.cg.graph.Section;
 import edu.hnu.cg.graph.datablocks.BytesToValueConverter;
+import edu.hnu.cg.graph.datablocks.DataBlockManager;
 import edu.hnu.cg.graph.datablocks.IntConverter;
 import edu.hnu.cg.graph.datablocks.MsgBytesTovalueConverter;
+import edu.hnu.cg.graph.userdefine.GraphConfig;
 
 public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread {
 
-	private int id;
+	private byte[] valueTemplate;
 
-	private int k;
-
+	private int id; // worker id
+	private int k; // worker : vertices
 	private byte[] record;
 
-	// buffer for msgs which comes from other section of the previous superstep
-	private byte[] msgsCurrent;
-	private byte[] msgsNext; // buffer msgs comes from other section used for
-								// next superstep
-
-	private Manager mgr;
+	private Manager<?, ?, ?> mgr;
 	private Section currentSection;
+	@SuppressWarnings("rawtypes")
 	private Handler handler;
-	private MsgBytesTovalueConverter<MsgValueType> msgValueTypeBytesToValueConverter;
+	private MsgBytesTovalueConverter<MsgValueType> msgConverter;
 	private BytesToValueConverter<VertexValueType> vertexValueTypeBytesToValueConverter;
 	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;
 
@@ -34,44 +31,139 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 	private MappedByteBuffer vertexInfoBuffer;
 	private MappedByteBuffer indexBuffer;
 
+	private DataBlockManager dataBlockManager;
+
+	/* 顶点信息* */
+	// record : length , vid , valueoffset len1-> vid , weight , offset -> len2
+	// ...
+	private int vid;
+	private VertexValueType val;
+	private int valueOffset;
+
+	private int inSectionInDegree;
+	private int[] insectionEdges; // id offset id offset
+	private EdgeValueType[] ievts;
+
+	private int outDegree;
+	private int[] outEdges;
+	private EdgeValueType[] oevts;
+
+	public Worker(int id, Manager<?, ?, ?> mgr,
+			Handler<VertexValueType, EdgeValueType, MsgValueType> handler,
+			MsgBytesTovalueConverter<MsgValueType> msgConverter,
+			BytesToValueConverter<VertexValueType> vertexValueTypeBytesToValueConverter,
+			BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter,
+			DataBlockManager dataBlockManager) {
+		this.id = id;
+		this.mgr = mgr;
+		this.handler = handler;
+
+		this.msgConverter = msgConverter;
+		this.vertexValueTypeBytesToValueConverter = vertexValueTypeBytesToValueConverter;
+		this.edgeValueTypeBytesToValueConverter = edgeValueTypeBytesToValueConverter;
+		if (vertexValueTypeBytesToValueConverter != null) {
+			valueTemplate = new byte[vertexValueTypeBytesToValueConverter.sizeOf()];
+		}
+	}
+
 	private boolean running = true;
 
-	
-
-	
-
-	/***/
-
-	public int computeOffset(int i) {
-		return id * 8 + i * 32 * 8;
-	}
-
-	public void resetK() {
-		k = 0;
-	}
-
+	@SuppressWarnings("unchecked")
 	public void run() {
 
 		while (running) {
 			if (currentSection == null) {
 				currentSection = mgr.getCurrentSection();
 			}
+
 			record = getRecord();
 			assert (record != null);
-			extractRecord(record);
-			
-			for(int i=0;i<inSectionInDegree;i++){
-				MsgValueType msg = getMsgType(insectionEdges[2*i+1]);
-				handler.compute(msg);
-			}
-			
-			for(int i=0;i<msgsCurrent.length;i++){
-				
+
+			extractRecord(record); // 解析二进制数据
+
+			// 计算本section内的消息
+			for (int i = 0; i < inSectionInDegree; i++) {
+				byte[] msg = getMsg(insectionEdges[2 * i + 1]);
+				val = (VertexValueType) handler.compute(msgConverter.getFrom(msg),
+						msgConverter.getTo(msg), val, msgConverter.getValue(msg));
 			}
 
-			swapBuffer();
+			// 计算来自section外的消息
+			byte[] buff = dataBlockManager.getRawBlock(id);
+			if (buff != null) {
+				int current = -1;
+				for (int i = 0; i < buff.length;) {
+					byte[] msg = new byte[msgConverter.sizeOf()];
+					System.arraycopy(buff, i, msg, 0, msgConverter.sizeOf());
+
+					int from = msgConverter.getFrom(msg);
+					int to = msgConverter.getTo(msg);
+
+					if (i == 0)
+						current = from;
+
+					if (from == current && to == vid) {
+						val = (VertexValueType) handler.compute(from, to, val,
+								msgConverter.getValue(msg));
+						i += msgConverter.sizeOf();
+					} else {
+						if (i != 0) {
+							if (from != current) {
+								if (i % GraphConfig.cachelineSize == 0) {
+									val = (VertexValueType) handler.compute(from, to, val,
+											msgConverter.getValue(msg));
+									i += msgConverter.sizeOf();
+									current = from;
+								} else {
+									i = (i / 64 + 1) * 64;
+									System.arraycopy(buff, i, msg, 0, msgConverter.sizeOf());
+									from = msgConverter.getFrom(msg);
+									to = msgConverter.getTo(msg);
+									val = (VertexValueType) handler.compute(from, to, val,
+											msgConverter.getValue(msg));
+									i += msgConverter.sizeOf();
+								}
+							}
+						}
+					}
+
+				}
+			}
+
+			// 更新顶点的value值
+			vertexValueTypeBytesToValueConverter.setValue(valueTemplate, val);
+			dataBuffer.put(valueTemplate, valueOffset, valueTemplate.length);
+
+			// 同步点
+			// 代码TO DO
+
+			// 发送消息
+			for (int i = 0; i < outDegree; i++) {
+				int to = outEdges[2 * i];
+				byte[] msg = handler.genMessage(vid, to, val, oevts[i]);
+				if (forward(vid) == forward(to))
+					eDataBuffer.put(msg, outEdges[2 * i + 1], msg.length);
+				else {
+					int workerId = location(to);
+					mgr.getWorker(workerId).putMessage(workerId, msg, outEdges[2 * i + 1]);
+				}
+			}
 		}
 
+		// 卸载分区，载入下一个分区
+
+	}
+
+	private void putMessage(int workerId, byte[] msg, int offset) {
+		byte[] buff = dataBlockManager.getRawBlock(workerId);
+		System.arraycopy(msg, 0, buff, offset, msg.length);
+	}
+
+	// vertex : worker = 1 : 1
+	// k always 0
+	// 如果vertex : worker = n ： 1 太复杂，不想搞了
+	public int computeOffset(int i) {
+		return id * GraphConfig.verticesToWoker * Graph.offsetWidth + k * 4;
 	}
 
 	public byte[] getRecord() {
@@ -83,94 +175,101 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 		}
 		int len = currentSection.getVertexInformationBuffer().getInt(fetchIndex);
 		data = new byte[len];
-		currentSection.getVertexInformationBuffer().get(record, fetchIndex, len);
+		currentSection.getVertexInformationBuffer().get(data, fetchIndex, len);
 		return data;
 	}
-	
-	/* 顶点信息* */
-	// record : length , vid , valueoffset  len1-> vid , weight , offset -> len2 ...
-	private int vid;
-	private int valueOffset;
-	private VertexValueType val;
-	
-	private int inSectionInDegree;
-	private int[] insectionEdges; // id offset id offset
-	private EdgeValueType[] ievts;
-	
-	private int outDegree;
-	private int[] outEdges;
-	private EdgeValueType[] oevts;
-	
+
 	@SuppressWarnings("unchecked")
 	private void extractRecord(byte[] rd) {
-		int sizeof = edgeValueTypeBytesToValueConverter == null ? 0 : edgeValueTypeBytesToValueConverter.sizeOf();
+
+		int sizeof = edgeValueTypeBytesToValueConverter == null ? 0
+				: edgeValueTypeBytesToValueConverter.sizeOf();
 		IntConverter inc = new IntConverter();
-		
+
 		int len = rd.length;
 		int i = 0;
 		if (len > 12) {
-			int validate = readRecord(rd, i, 4, inc); i += 4;
-			
+			int validate = readRecord(rd, i, 4, inc);
+			i += 4;
 			assert (validate == len);
 			len = validate;
-			
-			vid = readRecord(rd, i, 4, inc); i += 4;
-			valueOffset = readRecord(rd,i,4,inc); i+=4;
+
+			vid = readRecord(rd, i, 4, inc);
+			i += 4;
+			valueOffset = readRecord(rd, i, 4, inc);
+			i += 4;
 			val = getVertexValue(valueOffset);
 			inSectionInDegree = readRecord(rd, i, 4, inc);
-			
-			insectionEdges = new int[inSectionInDegree*2];// vid offset
-			if(sizeof == 0) ievts = (EdgeValueType[]) new Object[0];
-			else ievts =(EdgeValueType[]) new Object[inSectionInDegree];
-			
+
+			insectionEdges = new int[inSectionInDegree * 2];// vid offset
+			if (sizeof == 0)
+				ievts = (EdgeValueType[]) new Object[0];
+			else
+				ievts = (EdgeValueType[]) new Object[inSectionInDegree];
+
 			int p = 0;
 			int q = 0;
 			while (q < inSectionInDegree) {
-				readEdgeRecord(rd, i, 8+sizeof,sizeof,p,inc,insectionEdges,ievts);
-				p+=2;
-				i+=(8+sizeof);
+				readEdgeRecord(rd, i, sizeof, p, inc, insectionEdges, ievts);
+				p += 2;
+				i += (8 + sizeof);
 				q++;
 			}
-			
-			outDegree = readRecord(rd,i,4,inc);
-			outEdges = new int[outDegree*2];
-			if(sizeof == 0) oevts = (EdgeValueType[]) new Object[0];
-			else oevts =(EdgeValueType[]) new Object[outDegree];
-			
-			p = 0 ;
+
+			outDegree = readRecord(rd, i, 4, inc);
+			outEdges = new int[outDegree * 2];
+			if (sizeof == 0)
+				oevts = (EdgeValueType[]) new Object[0];
+			else
+				oevts = (EdgeValueType[]) new Object[outDegree];
+
+			p = 0;
 			q = 0;
-			
-			while(q < outDegree){
-				readEdgeRecord(rd, i, 8+sizeof,sizeof,p,inc,outEdges,oevts);
-				p+=2;
-				i+=(8+sizeof);
+
+			while (q < outDegree) {
+				readEdgeRecord(rd, i, sizeof, p, inc, outEdges, oevts);
+				p += 2;
+				i += (8 + sizeof);
 				q++;
 			}
-
 		}
 
 	}
-	
-/*	private int readInt(byte[] rd,int index){
+
+	/**
+	 * 读取 vid -> edge_wight -> offset
+	 * 
+	 * @param rd
+	 *            : record
+	 * @param pos
+	 *            : 当前的record读取位置
+	 * @param ts
+	 *            : 写入的数组的位置
+	 * 
+	 * */
+
+	private void readEdgeRecord(byte[] rd, int pos, int len, int ts, IntConverter converter,
+			int[] d, EdgeValueType[] v) {
 		byte[] tmp = new byte[4];
-		
-	}
-	
-	private float readFloat(byte[] rd,int index){
-		
-	}*/
-	
-	private  void  readEdgeRecord(byte[] rd,int pos,int len0,int len1,int ts,IntConverter converter,int[] d,EdgeValueType[] v){
-		byte[] tmp = new byte[4];
-		byte[] edge = new byte[len1] ;
-		System.arraycopy(rd, pos, tmp, 0, 4); pos+=4;
+		byte[] edge = new byte[len];
+
+		// 读取vid
+		System.arraycopy(rd, pos, tmp, 0, 4);
+		pos += 4;
 		d[ts++] = converter.getValue(tmp);
-		if(len1!=0){
-			System.arraycopy(rd, pos, edge, 0, len1); pos+=len1;
-			v[ts/2] = edgeValueTypeBytesToValueConverter.getValue(edge);
+
+		// 读取edge_weight
+		if (len != 0) {
+			System.arraycopy(rd, pos, edge, 0, len);
+			pos += len;
+			v[ts / 2] = edgeValueTypeBytesToValueConverter.getValue(edge);
 		}
-		System.arraycopy(rd, pos, tmp, 0, 4); pos+=4;
+
+		// 读取offset
+		System.arraycopy(rd, pos, tmp, 0, 4);
+		pos += 4;
 		d[ts] = converter.getValue(tmp);
+
 	}
 
 	private <T> T readRecord(byte[] arr, int pos, int len, BytesToValueConverter<T> converter) {
@@ -187,24 +286,9 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 		VertexValueType val = vertexValueTypeBytesToValueConverter.getValue(valueTemplate);
 		return val;
 	}
-	
-	
-	private MsgValueType readMessage(byte[] buf,int pos ){
-		
-		
-	}
 
-	private MsgValueType getMsgType(int offset){
-		byte[] msg = getMsg(offset);
-		if(msgValueTypeBytesToValueConverter!= null){
-			return msgValueTypeBytesToValueConverter.getValue(msg);
-		}
-		
-		return null;
-	}
-	
 	private byte[] getMsg(int offset) {
-		int len = (msgValueTypeBytesToValueConverter != null ? msgValueTypeBytesToValueConverter.sizeOf() : 8);
+		int len = (msgConverter != null ? msgConverter.sizeOf() : 8);
 		byte[] msg = new byte[len];
 		if (currentSection != null) {
 			if (currentSection.getEdgeDataBuffer() != null) {
@@ -214,12 +298,13 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 		return msg;
 
 	}
-	
 
-
-	private void swapBuffer() {
-		byte[] tmp = msgsCurrent;
-		msgsCurrent = msgsNext;
-		msgsNext = tmp;
+	private int forward(int id) {
+		return id / GraphConfig.sectionSize;
 	}
+
+	private int location(int id) {
+		return id % GraphConfig.sectionSize % GraphConfig.numWorkers;
+	}
+
 }

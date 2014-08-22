@@ -36,7 +36,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 	private EdgeProcessor<EdgeValueType> edgeProcessor;
 	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;
 	private BytesToValueConverter<VertexValueType> verterxValueTypeBytesToValueConverter;
-	private BytesToValueConverter<MsgValueType> msgValueTypeBytesToValueConverter;
+	private BytesToValueConverter<MsgValueType> msgConverter;
 
 	private byte[] vertexValueTemplate;
 	private byte[] edgeValueTemplate;
@@ -51,7 +51,8 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 	public Section[] sections;
 
 	static {
-		offsetWidth = 4;
+
+		offsetWidth = 4; // 4 或者 8 个字节
 		sectionSize = GraphConfig.sectionSize;
 		numVertices = GraphConfig.numVertices;
 
@@ -62,6 +63,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 
 		cachelineTemplate = new byte[GraphConfig.cachelineSize];
 		lengthsOfWorkerMsgsPool = new int[GraphConfig.numWorkers];
+
 	}
 
 	private DataOutputStream[] sectionAdjWriter; // section的邻接表文件输出流
@@ -77,6 +79,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 	public Graph(String filename, String _format, BytesToValueConverter<EdgeValueType> _edgeValueTypeBytesToValueConverter,
 			BytesToValueConverter<VertexValueType> _verterxValueTypeBytesToValueConverter, VertexProcessor<VertexValueType> _vertexProcessor,
 			EdgeProcessor<EdgeValueType> _edgeProcessor) throws FileNotFoundException {
+
 		graphFilename = filename;
 		if (_format.equals("edgelist"))
 			format = graphFormat.EDGELIST;
@@ -181,7 +184,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 
 		int sizeof = (edgeValueTypeBytesToValueConverter != null ? edgeValueTypeBytesToValueConverter.sizeOf() : 0); // 边上的值的大小
 		int sizeofValue = (verterxValueTypeBytesToValueConverter != null ? verterxValueTypeBytesToValueConverter.sizeOf() : 4);// 顶点值的size大小
-		int msgSize = (msgValueTypeBytesToValueConverter != null ? msgValueTypeBytesToValueConverter.sizeOf() : 16); // id
+		int msgSize = (msgConverter != null ? msgConverter.sizeOf() : 16); // id
 																														// id
 																														// value
 		int cachelineSize = GraphConfig.cachelineSize;
@@ -244,7 +247,6 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 
 			long[] inedgeIndexer = new long[inSectionEdgeCounter];
 			byte[] inedgeValue = new byte[inSectionEdgeCounter * (sizeof + offsetWidth)];
-
 			currentInSectionOffset = 0;
 			int ic = 0;
 			for (int k = 0; k < edges.length; k++) {
@@ -252,7 +254,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 				if (forward(d_id) == i) {
 					inedgeIndexer[ic] = pack(getSecond(edges[k]), getFirst(edges[k]));
 					System.arraycopy(edgeValues, k * sizeof, inedgeValue, ic * (sizeof + offsetWidth), sizeof);
-					System.arraycopy(longToByteArray((long) ic * cachelineSize), 0, inedgeValue, (ic * (sizeof + offsetWidth) + sizeof), offsetWidth);
+					System.arraycopy(intToByteArray(ic * cachelineSize), 0, inedgeValue, (ic * (sizeof + offsetWidth) + sizeof), offsetWidth);
 					ic++;
 				}
 			}
@@ -313,13 +315,21 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 					while (tmp < currentPos) {
 						System.arraycopy(intToByteArray(getSecond(inedgeIndexer[tmp])), 0, record, curstart, 4);
 						curstart += 4;
+
 						// sectionAdjWriter[i].writeInt(getSecond(inedgeIndexer[currentPos]));
-						System.arraycopy(inedgeValue, tmp * (sizeof + offsetWidth), record, curstart, sizeof);
-						curstart += sizeof;
 						// sectionAdjWriter[i].write(edgeValueTemplate);
-						System.arraycopy(inedgeValue, (tmp * (sizeof + offsetWidth) + sizeof), record, curstart, offsetWidth);
-						curstart += offsetWidth;
 						// sectionAdjWriter[i].writeLong(reverseOffset(byteArrayToLong(offsetTypeTemplate)));
+
+						// System.arraycopy(inedgeValue, tmp * (sizeof +
+						// offsetWidth), record, curstart, sizeof);
+						// curstart += sizeof;
+						// System.arraycopy(inedgeValue, (tmp * (sizeof +
+						// offsetWidth) + sizeof), record, curstart,
+						// offsetWidth);
+						// curstart += offsetWidth;
+
+						System.arraycopy(inedgeValue, tmp * (sizeof + offsetWidth), record, curstart, sizeof + offsetWidth);
+						curstart += (sizeof + offsetWidth);
 						tmp++;
 					}
 					// 写入record的出边信息 id 权重 边offset
@@ -348,7 +358,6 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 						} else {
 							int workerId = location(getSecond(edges[p]));
 							workerIds.add(workerId);
-
 							System.arraycopy(intToByteArray(lengthsOfWorkerMsgsPool[workerId]), 0, record, curstart, offsetWidth);
 							curstart += offsetWidth;
 							// sectionAdjWriter[i].writeLong(currentOutSectionOffset);
@@ -360,14 +369,18 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 						int offset2 = lengthsOfWorkerMsgsPool[ints];
 						int offset1 = copyOfLengthsOfWorkerMsgsPool[ints];
 						int totalMessageLen = offset2 - offset1;
-						if (totalMessageLen % cachelineSize != 0)
-							lengthsOfWorkerMsgsPool[ints] = offset2 + (64 - totalMessageLen % 64);
-						copyOfLengthsOfWorkerMsgsPool[ints] = lengthsOfWorkerMsgsPool[ints];
+						if (totalMessageLen != 0) {
+							if (totalMessageLen % cachelineSize != 0)
+								lengthsOfWorkerMsgsPool[ints] = offset2 + (64 - totalMessageLen % 64);
+							copyOfLengthsOfWorkerMsgsPool[ints] = lengthsOfWorkerMsgsPool[ints];
+						}
 					}
+					
+					workerIds = null; // help to gc
 
 					sectionAdjWriter[i].write(record);
 
-					sectionFetchIndexWriter[i].writeLong(fetchIndex);
+					sectionFetchIndexWriter[i].writeInt(fetchIndex);
 
 					fetchIndex += length;
 					valueOffset += cachelineSize;

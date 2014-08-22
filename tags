@@ -1,0 +1,401 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ADJACENCY	src/edu/hnu/cg/graph/Graph.java	/^		EDGELIST, ADJACENCY$/;"	e	enum:Graph.graphFormat	file:
+BufferedDataInputStream	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public BufferedDataInputStream(InputStream o) {$/;"	m	class:BufferedDataInputStream
+BufferedDataInputStream	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public BufferedDataInputStream(InputStream o, int bufLength) {$/;"	m	class:BufferedDataInputStream
+BufferedDataInputStream	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^public class BufferedDataInputStream$/;"	c
+BytesToValueConverter	src/edu/hnu/cg/graph/datablocks/BytesToValueConverter.java	/^public interface BytesToValueConverter<T> {$/;"	i
+DataBlockManager	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public DataBlockManager(){}$/;"	m	class:DataBlockManager
+DataBlockManager	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^public class DataBlockManager {$/;"	c
+DirectMemoryTrade	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static class DirectMemoryTrade$/;"	c	class:TestDirectMemoryLayout
+EDGELIST	src/edu/hnu/cg/graph/Graph.java	/^		EDGELIST, ADJACENCY$/;"	e	enum:Graph.graphFormat	file:
+EdgeProcessor	src/edu/hnu/cg/graph/preprocessing/EdgeProcessor.java	/^public interface EdgeProcessor<EdgeValueType> {$/;"	i
+FalseSharing	src/edu/hnu/cg/test/FalseSharing.java	/^    public FalseSharing(final int arrayIndex)$/;"	m	class:FalseSharing
+FalseSharing	src/edu/hnu/cg/test/FalseSharing.java	/^public final class FalseSharing$/;"	c
+Filename	src/edu/hnu/cg/graph/Filename.java	/^public class Filename {$/;"	c
+FloatConverter	src/edu/hnu/cg/graph/datablocks/FloatConverter.java	/^public class FloatConverter implements BytesToValueConverter<Float> {$/;"	c
+Graph	src/edu/hnu/cg/graph/Graph.java	/^	public Graph(String filename, String _format, BytesToValueConverter<EdgeValueType> _edgeValueTypeBytesToValueConverter,$/;"	m	class:Graph
+Graph	src/edu/hnu/cg/graph/Graph.java	/^public class Graph<VertexValueType extends Number, EdgeValueType extends Number, MsgValueType> {$/;"	c
+GraphConfig	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^public interface GraphConfig {$/;"	i
+Handler	src/edu/hnu/cg/framework/Handler.java	/^public interface Handler<MsgValueType> {$/;"	i
+Helper	src/edu/hnu/cg/util/Helper.java	/^public class Helper {$/;"	c
+ITERATIONS	src/edu/hnu/cg/test/FalseSharing.java	/^    public final static long ITERATIONS = 50L * 1000L * 1000L;$/;"	f	class:FalseSharing
+IntConverter	src/edu/hnu/cg/graph/datablocks/IntConverter.java	/^public class IntConverter implements BytesToValueConverter<Integer> {$/;"	c
+LongConverter	src/edu/hnu/cg/graph/datablocks/LongConverter.java	/^public class LongConverter implements BytesToValueConverter<Long> {$/;"	c
+Manager	src/edu/hnu/cg/framework/Manager.java	/^	public Manager(Graph graph){$/;"	m	class:Manager
+Manager	src/edu/hnu/cg/framework/Manager.java	/^public class Manager {$/;"	c
+MessageProcessor	src/edu/hnu/cg/graph/preprocessing/MessageProcessor.java	/^public interface MessageProcessor<MsgValueType> {$/;"	i
+Msg	src/edu/hnu/cg/framework/Msg.java	/^	public Msg(int from,int to, MsgValueType val){$/;"	m	class:Msg
+Msg	src/edu/hnu/cg/framework/Msg.java	/^public class Msg<MsgValueType> {$/;"	c
+Msg	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^class Msg implements MsgConverter<byte[]>{$/;"	c
+MsgBytesTovalueConverter	src/edu/hnu/cg/graph/datablocks/MsgBytesTovalueConverter.java	/^public interface MsgBytesTovalueConverter<MsgValueType> extends BytesToValueConverter<MsgValueType> {$/;"	i
+MsgConverter	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^public interface MsgConverter<MsgValueType> extends BytesToValueConverter<MsgValueType>{$/;"	i
+NUM_RECORDS	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static final int NUM_RECORDS = 50 * 10 * 10;$/;"	f	class:TestDirectMemoryLayout	file:
+NUM_THREADS	src/edu/hnu/cg/test/FalseSharing.java	/^    public final static int NUM_THREADS = 100; \/\/ change$/;"	f	class:FalseSharing
+Pointer	src/edu/hnu/cg/graph/datablocks/Pointer.java	/^	public Pointer(int blockId,int offset){$/;"	m	class:Pointer
+Pointer	src/edu/hnu/cg/graph/datablocks/Pointer.java	/^public class Pointer {$/;"	c
+Section	src/edu/hnu/cg/graph/Section.java	/^	public Section(int _id, String graphFiename, long vsize, long esize) throws IOException {$/;"	m	class:Section
+Section	src/edu/hnu/cg/graph/Section.java	/^public class Section {$/;"	c
+THE_UNSAFE	src/edu/hnu/cg/util/Helper.java	/^	private static Unsafe THE_UNSAFE;$/;"	f	class:Helper	file:
+TestDirectMemoryLayout	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^public class TestDirectMemoryLayout$/;"	c
+TestMapedByteBuffer	src/edu/hnu/cg/test/TestMapedByteBuffer.java	/^public class TestMapedByteBuffer {$/;"	c
+Vertex	src/edu/hnu/cg/graph/Vertex.java	/^	public Vertex(String adj){$/;"	m	class:Vertex
+Vertex	src/edu/hnu/cg/graph/Vertex.java	/^	public Vertex(int _id, VertexDegree degree) {$/;"	m	class:Vertex
+Vertex	src/edu/hnu/cg/graph/Vertex.java	/^public class Vertex<VertexValue, EdgeValue> {$/;"	c
+VertexDegree	src/edu/hnu/cg/graph/datablocks/VertexDegree.java	/^	public VertexDegree(int _inDegree,int _outDegree){$/;"	m	class:VertexDegree
+VertexDegree	src/edu/hnu/cg/graph/datablocks/VertexDegree.java	/^public class VertexDegree {$/;"	c
+VertexIdTranslate	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    protected  VertexIdTranslate() {$/;"	m	class:VertexIdTranslate
+VertexIdTranslate	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public VertexIdTranslate(int vertexIntervalLength, int numShards) {$/;"	m	class:VertexIdTranslate
+VertexIdTranslate	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^public class VertexIdTranslate {$/;"	c
+VertexProcessor	src/edu/hnu/cg/graph/preprocessing/VertexProcessor.java	/^public interface VertexProcessor<ValueType> {$/;"	i
+VolatileLong	src/edu/hnu/cg/test/FalseSharing.java	/^    public final static class VolatileLong$/;"	c	class:FalseSharing
+Worker	src/edu/hnu/cg/framework/Worker.java	/^public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread {$/;"	c
+WriteTest	src/edu/hnu/cg/test/WriteTest.java	/^public class WriteTest {$/;"	c
+addEdge	src/edu/hnu/cg/graph/Graph.java	/^	public void addEdge(int from, int to, String token) throws IOException {$/;"	m	class:Graph
+addInedge	src/edu/hnu/cg/graph/Vertex.java	/^	public void addInedge(int chunkId, int offset, int _id) {$/;"	m	class:Vertex
+addOutEdge	src/edu/hnu/cg/graph/Vertex.java	/^	public void addOutEdge(int chunkId, int offset, int _id) {$/;"	m	class:Vertex
+addToShovel	src/edu/hnu/cg/graph/Graph.java	/^	private void addToShovel(int from, int to, EdgeValueType value) throws IOException {$/;"	m	class:Graph	file:
+addVertexValue	src/edu/hnu/cg/graph/Graph.java	/^	public void addVertexValue(int from, VertexValueType value) throws IOException {$/;"	m	class:Graph
+address	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static long address;$/;"	f	class:TestDirectMemoryLayout	file:
+allocateBlock	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public int allocateBlock(int numBytes){$/;"	m	class:DataBlockManager
+arrayIndex	src/edu/hnu/cg/test/FalseSharing.java	/^    private final int arrayIndex;$/;"	f	class:FalseSharing	file:
+backward	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public int backward(int transId) {$/;"	m	class:VertexIdTranslate
+blockId	src/edu/hnu/cg/graph/datablocks/Pointer.java	/^	public int blockId;$/;"	f	class:Pointer
+blockManager	src/edu/hnu/cg/graph/Vertex.java	/^	public static DataBlockManager blockManager;$/;"	f	class:Vertex
+blocks	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	private ArrayList<byte[]> blocks = new ArrayList<byte[]>(32768);$/;"	f	class:DataBlockManager	file:
+bufferOffset	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    private long bufferOffset=0;$/;"	f	class:BufferedDataInputStream	file:
+byteArrayToInt	src/edu/hnu/cg/graph/Graph.java	/^	public static int byteArrayToInt(byte[] array) {$/;"	m	class:Graph
+byteArrayToInt	src/edu/hnu/cg/test/WriteTest.java	/^	public static int byteArrayToInt(byte[] bytes) {$/;"	m	class:WriteTest
+byteArrayToLong	src/edu/hnu/cg/graph/Graph.java	/^	public static long byteArrayToLong(byte[] array) {$/;"	m	class:Graph
+byteArrayToLong	src/edu/hnu/cg/test/WriteTest.java	/^	public static long byteArrayToLong(byte[] array) {$/;"	m	class:WriteTest
+cachelineSize	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final int cachelineSize = 64; \/\/ default settings$/;"	f	interface:GraphConfig
+cachelineTemplate	src/edu/hnu/cg/graph/Graph.java	/^	public static byte[] cachelineTemplate;$/;"	f	class:Graph
+clean	src/edu/hnu/cg/graph/Section.java	/^	private void clean(final MappedByteBuffer buffer) {$/;"	m	class:Section	file:
+clean	src/edu/hnu/cg/test/TestMapedByteBuffer.java	/^	private static void clean(final MappedByteBuffer buffer) {$/;"	m	class:TestMapedByteBuffer	file:
+clientIdOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long clientIdOffset = offset += 8;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+compute	src/edu/hnu/cg/framework/Handler.java	/^	void compute(MsgValueType msg);$/;"	m	interface:Handler
+computeOffset	src/edu/hnu/cg/framework/Worker.java	/^	public int computeOffset(int i) {$/;"	m	class:Worker
+currentSection	src/edu/hnu/cg/framework/Manager.java	/^	private int currentSection ;$/;"	f	class:Manager	file:
+currentSection	src/edu/hnu/cg/framework/Worker.java	/^	private Section currentSection;$/;"	f	class:Worker	file:
+dataBuffer	src/edu/hnu/cg/framework/Worker.java	/^	private MappedByteBuffer dataBuffer;$/;"	f	class:Worker	file:
+dereference	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public <T> T dereference(Pointer ptr,BytesToValueConverter<T> conv){$/;"	m	class:DataBlockManager
+destroy	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static void destroy()$/;"	m	class:TestDirectMemoryLayout	file:
+disableInedges	src/edu/hnu/cg/graph/Vertex.java	/^	public static boolean disableInedges = false;$/;"	f	class:Vertex
+disableOutedges	src/edu/hnu/cg/graph/Vertex.java	/^	public static boolean disableOutedges = false;$/;"	f	class:Vertex
+eDataBuffer	src/edu/hnu/cg/framework/Worker.java	/^	private MappedByteBuffer eDataBuffer;$/;"	f	class:Worker	file:
+edataSize	src/edu/hnu/cg/graph/Section.java	/^	private long edataSize;$/;"	f	class:Section	file:
+edgeDataBuffer	src/edu/hnu/cg/graph/Section.java	/^	private MappedByteBuffer edgeDataBuffer;$/;"	f	class:Section	file:
+edgeDataFile	src/edu/hnu/cg/graph/Section.java	/^	private RandomAccessFile edgeDataFile;$/;"	f	class:Section	file:
+edgeDataFileChannel	src/edu/hnu/cg/graph/Section.java	/^	private FileChannel edgeDataFileChannel;$/;"	f	class:Section	file:
+edgeDataFilename	src/edu/hnu/cg/graph/Section.java	/^	private String edgeDataFilename;$/;"	f	class:Section	file:
+edgeProcessor	src/edu/hnu/cg/graph/Graph.java	/^	private EdgeProcessor<EdgeValueType> edgeProcessor;$/;"	f	class:Graph	file:
+edgeToEdgeSeparate	src/edu/hnu/cg/graph/Graph.java	/^	private static final String edgeToEdgeSeparate = "->";$/;"	f	class:Graph	file:
+edgeValueConverter	src/edu/hnu/cg/graph/Vertex.java	/^	public static BytesToValueConverter edgeValueConverter;$/;"	f	class:Vertex
+edgeValueTemplate	src/edu/hnu/cg/graph/Graph.java	/^	private byte[] edgeValueTemplate;$/;"	f	class:Graph	file:
+edgeValueTypeBytesToValueConverter	src/edu/hnu/cg/framework/Worker.java	/^	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;$/;"	f	class:Worker	file:
+edgeValueTypeBytesToValueConverter	src/edu/hnu/cg/graph/Graph.java	/^	private BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter;$/;"	f	class:Graph	file:
+edu.hnu.cg.framework	src/edu/hnu/cg/framework/Handler.java	/^package edu.hnu.cg.framework;$/;"	p
+edu.hnu.cg.framework	src/edu/hnu/cg/framework/Manager.java	/^package edu.hnu.cg.framework;$/;"	p
+edu.hnu.cg.framework	src/edu/hnu/cg/framework/Msg.java	/^package edu.hnu.cg.framework;$/;"	p
+edu.hnu.cg.framework	src/edu/hnu/cg/framework/Worker.java	/^package edu.hnu.cg.framework;$/;"	p
+edu.hnu.cg.graph	src/edu/hnu/cg/graph/Filename.java	/^package edu.hnu.cg.graph;$/;"	p
+edu.hnu.cg.graph	src/edu/hnu/cg/graph/Graph.java	/^package edu.hnu.cg.graph;$/;"	p
+edu.hnu.cg.graph	src/edu/hnu/cg/graph/Section.java	/^package edu.hnu.cg.graph;$/;"	p
+edu.hnu.cg.graph	src/edu/hnu/cg/graph/Vertex.java	/^package edu.hnu.cg.graph;$/;"	p
+edu.hnu.cg.graph	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^package edu.hnu.cg.graph;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/BytesToValueConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/FloatConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/IntConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/LongConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/MsgBytesTovalueConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/Pointer.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.datablocks	src/edu/hnu/cg/graph/datablocks/VertexDegree.java	/^package edu.hnu.cg.graph.datablocks;$/;"	p
+edu.hnu.cg.graph.preprocessing	src/edu/hnu/cg/graph/preprocessing/EdgeProcessor.java	/^package edu.hnu.cg.graph.preprocessing;$/;"	p
+edu.hnu.cg.graph.preprocessing	src/edu/hnu/cg/graph/preprocessing/MessageProcessor.java	/^package edu.hnu.cg.graph.preprocessing;$/;"	p
+edu.hnu.cg.graph.preprocessing	src/edu/hnu/cg/graph/preprocessing/VertexProcessor.java	/^package edu.hnu.cg.graph.preprocessing;$/;"	p
+edu.hnu.cg.graph.userdefine	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^package edu.hnu.cg.graph.userdefine;$/;"	p
+edu.hnu.cg.test	src/edu/hnu/cg/test/FalseSharing.java	/^package edu.hnu.cg.test;$/;"	p
+edu.hnu.cg.test	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^package edu.hnu.cg.test;$/;"	p
+edu.hnu.cg.test	src/edu/hnu/cg/test/TestMapedByteBuffer.java	/^package edu.hnu.cg.test;$/;"	p
+edu.hnu.cg.test	src/edu/hnu/cg/test/WriteTest.java	/^package edu.hnu.cg.test;$/;"	p
+edu.hnu.cg.util	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^package edu.hnu.cg.util;$/;"	p
+edu.hnu.cg.util	src/edu/hnu/cg/util/Helper.java	/^package edu.hnu.cg.util;$/;"	p
+eidToValue	src/edu/hnu/cg/graph/Graph.java	/^	private long eidToValue(String part, int from) {$/;"	m	class:Graph	file:
+empty	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public boolean empty(){$/;"	m	class:DataBlockManager
+extractLine	src/edu/hnu/cg/graph/Graph.java	/^	private void extractLine(String line) {$/;"	m	class:Graph	file:
+extractRecord	src/edu/hnu/cg/framework/Worker.java	/^	private void extractRecord(byte[] rd) {$/;"	m	class:Worker	file:
+fetchIndexFile	src/edu/hnu/cg/graph/Section.java	/^	private RandomAccessFile fetchIndexFile;$/;"	f	class:Section	file:
+fetchIndexFilename	src/edu/hnu/cg/graph/Section.java	/^	private String fetchIndexFilename;$/;"	f	class:Section	file:
+flyweight	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static final DirectMemoryTrade flyweight = new DirectMemoryTrade();$/;"	f	class:TestDirectMemoryLayout	file:
+format	src/edu/hnu/cg/graph/Graph.java	/^	private graphFormat format;$/;"	f	class:Graph	file:
+forward	src/edu/hnu/cg/graph/Graph.java	/^	private int forward(int id) {$/;"	m	class:Graph	file:
+forward	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public int forward(int origId) {$/;"	m	class:VertexIdTranslate
+fromFile	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public static VertexIdTranslate fromFile(File f) throws IOException {$/;"	m	class:VertexIdTranslate
+fromString	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public static VertexIdTranslate fromString(String s) {$/;"	m	class:VertexIdTranslate
+get	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static DirectMemoryTrade get(final int index)$/;"	m	class:TestDirectMemoryLayout	file:
+getClientId	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public long getClientId()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getCompactEdgeFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getCompactEdgeFilename(String filename) {$/;"	m	class:Filename
+getCurrentSection	src/edu/hnu/cg/framework/Manager.java	/^	public Section getCurrentSection(){$/;"	m	class:Manager
+getEdgeDataBuffer	src/edu/hnu/cg/graph/Section.java	/^	public MappedByteBuffer getEdgeDataBuffer() {$/;"	m	class:Section
+getFirst	src/edu/hnu/cg/graph/Graph.java	/^	static int getFirst(long e) {$/;"	m	class:Graph
+getFirst	src/edu/hnu/cg/test/WriteTest.java	/^	static int getFirst(long e) {$/;"	m	class:WriteTest
+getFrom	src/edu/hnu/cg/framework/Msg.java	/^	int getFrom(){$/;"	m	class:Msg
+getFrom	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public int getFrom() {$/;"	m	class:Msg
+getFrom	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public int getFrom();$/;"	m	interface:MsgConverter
+getGraphOffsetFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getGraphOffsetFilename(String filename) {$/;"	m	class:Filename
+getId	src/edu/hnu/cg/graph/Vertex.java	/^	public int getId() {$/;"	m	class:Vertex
+getInDegree	src/edu/hnu/cg/graph/Vertex.java	/^	public int getInDegree() {$/;"	m	class:Vertex
+getInEdgeValueById	src/edu/hnu/cg/graph/Vertex.java	/^	public EdgeValue getInEdgeValueById(int _id) {$/;"	m	class:Vertex
+getInEdgeValueByIndex	src/edu/hnu/cg/graph/Vertex.java	/^	public EdgeValue getInEdgeValueByIndex(int i) {$/;"	m	class:Vertex
+getIndexBuffer	src/edu/hnu/cg/graph/Section.java	/^	public MappedByteBuffer getIndexBuffer() {$/;"	m	class:Section
+getInstrumentCode	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public int getInstrumentCode()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getMsg	src/edu/hnu/cg/framework/Worker.java	/^	private byte[] getMsg(int offset) {$/;"	m	class:Worker	file:
+getMsgType	src/edu/hnu/cg/framework/Worker.java	/^	private MsgValueType getMsgType(int offset){$/;"	m	class:Worker	file:
+getNumEdges	src/edu/hnu/cg/graph/Vertex.java	/^	public int getNumEdges() {$/;"	m	class:Vertex
+getNumShards	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public int getNumShards() {$/;"	m	class:VertexIdTranslate
+getObjectSize	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public static long getObjectSize()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getOutDegree	src/edu/hnu/cg/graph/Vertex.java	/^	public int getOutDegree() {$/;"	m	class:Vertex
+getOutEdgeValueById	src/edu/hnu/cg/graph/Vertex.java	/^	public EdgeValue getOutEdgeValueById(int _id) {$/;"	m	class:Vertex
+getOutEdgeValueByIndex	src/edu/hnu/cg/graph/Vertex.java	/^	public EdgeValue getOutEdgeValueByIndex(int i) {$/;"	m	class:Vertex
+getPrice	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public long getPrice()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getQuantity	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public long getQuantity()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getRawBlock	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public byte[] getRawBlock(int blockId){$/;"	m	class:DataBlockManager
+getReceiver	src/edu/hnu/cg/graph/datablocks/MsgBytesTovalueConverter.java	/^	int getReceiver();$/;"	m	interface:MsgBytesTovalueConverter
+getRecord	src/edu/hnu/cg/framework/Worker.java	/^	public byte[] getRecord() {$/;"	m	class:Worker
+getSecond	src/edu/hnu/cg/graph/Graph.java	/^	static int getSecond(long e) {$/;"	m	class:Graph
+getSecond	src/edu/hnu/cg/test/WriteTest.java	/^	static int getSecond(long e) {$/;"	m	class:WriteTest
+getSectionEdgeDataFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionEdgeDataFilename(String filename, int sectionid,int superstep) {$/;"	m	class:Filename
+getSectionEdgeDataFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionEdgeDataFilename(String sectionFilename, int superstep, String sectionid) {$/;"	m	class:Filename
+getSectionFetchIndexFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionFetchIndexFilename(String filename, int sectionid) {$/;"	m	class:Filename
+getSectionFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionFilename(String filname, int sectionid) {$/;"	m	class:Filename
+getSectionShovelFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionShovelFilename(String filename, int sectionid) {$/;"	m	class:Filename
+getSectionVertexDataFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionVertexDataFilename(String filename, int sectionid) {$/;"	m	class:Filename
+getSectionVertexShovelFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getSectionVertexShovelFilename(String filename,int sectionid){$/;"	m	class:Filename
+getSender	src/edu/hnu/cg/graph/datablocks/MsgBytesTovalueConverter.java	/^	int getSender();$/;"	m	interface:MsgBytesTovalueConverter
+getSide	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public char getSide()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getTo	src/edu/hnu/cg/framework/Msg.java	/^	int getTo(){$/;"	m	class:Msg
+getTo	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public int getTo() {$/;"	m	class:Msg
+getTo	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public int getTo();$/;"	m	interface:MsgConverter
+getTradeId	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public long getTradeId()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getUnsafe	src/edu/hnu/cg/util/Helper.java	/^	public static Unsafe getUnsafe(){$/;"	m	class:Helper
+getValue	src/edu/hnu/cg/graph/Vertex.java	/^	public VertexValue getValue() {$/;"	m	class:Vertex
+getValue	src/edu/hnu/cg/graph/datablocks/BytesToValueConverter.java	/^	public T getValue(byte[] array);$/;"	m	interface:BytesToValueConverter
+getValue	src/edu/hnu/cg/graph/datablocks/FloatConverter.java	/^	public Float getValue(byte[] array) {$/;"	m	class:FloatConverter
+getValue	src/edu/hnu/cg/graph/datablocks/IntConverter.java	/^	public Integer getValue(byte[] array) {$/;"	m	class:IntConverter
+getValue	src/edu/hnu/cg/graph/datablocks/LongConverter.java	/^	public Long getValue(byte[] array) {$/;"	m	class:LongConverter
+getValue	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public byte[] getValue(byte[] array) {$/;"	m	class:Msg
+getVenueCode	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public int getVenueCode()$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+getVertexDataBuffer	src/edu/hnu/cg/graph/Section.java	/^	public MappedByteBuffer getVertexDataBuffer() {$/;"	m	class:Section
+getVertexDegreeFilename	src/edu/hnu/cg/graph/Filename.java	/^	public static String getVertexDegreeFilename(String filename) {$/;"	m	class:Filename
+getVertexInformationBuffer	src/edu/hnu/cg/graph/Section.java	/^	public MappedByteBuffer getVertexInformationBuffer() {$/;"	m	class:Section
+getVertexIntervalLength	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public int getVertexIntervalLength() {$/;"	m	class:VertexIdTranslate
+getVertexValue	src/edu/hnu/cg/framework/Worker.java	/^	private VertexValueType getVertexValue(int offset) {$/;"	m	class:Worker	file:
+graph	src/edu/hnu/cg/framework/Manager.java	/^	private Graph graph;$/;"	f	class:Manager	file:
+graphFilename	src/edu/hnu/cg/graph/Graph.java	/^	private String graphFilename;$/;"	f	class:Graph	file:
+graphFormat	src/edu/hnu/cg/graph/Graph.java	/^	public enum graphFormat {$/;"	g	class:Graph
+handler	src/edu/hnu/cg/framework/Worker.java	/^	private Handler handler;$/;"	f	class:Worker	file:
+id	src/edu/hnu/cg/framework/Worker.java	/^	private int id;$/;"	f	class:Worker	file:
+id	src/edu/hnu/cg/graph/Section.java	/^	private int id;$/;"	f	class:Section	file:
+id	src/edu/hnu/cg/graph/Vertex.java	/^	private int id;$/;"	f	class:Vertex	file:
+idToValueSeparate	src/edu/hnu/cg/graph/Graph.java	/^	private static final String idToValueSeparate = ",";$/;"	f	class:Graph	file:
+identity	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public static VertexIdTranslate identity() {$/;"	m	class:VertexIdTranslate
+ievts	src/edu/hnu/cg/framework/Worker.java	/^	private EdgeValueType[] ievts;$/;"	f	class:Worker	file:
+inDegree	src/edu/hnu/cg/graph/datablocks/VertexDegree.java	/^	public int inDegree;$/;"	f	class:VertexDegree
+inSectionEdgeCounters	src/edu/hnu/cg/graph/Graph.java	/^	private int[] inSectionEdgeCounters;$/;"	f	class:Graph	file:
+inSectionInDegree	src/edu/hnu/cg/framework/Worker.java	/^	private int inSectionInDegree;$/;"	f	class:Worker	file:
+in_degree	src/edu/hnu/cg/graph/Vertex.java	/^	private volatile int in_degree;$/;"	f	class:Vertex	file:
+in_degree_offset	src/edu/hnu/cg/graph/Vertex.java	/^	private static final long in_degree_offset;$/;"	f	class:Vertex	file:
+in_edges	src/edu/hnu/cg/graph/Vertex.java	/^	private int[] in_edges;$/;"	f	class:Vertex	file:
+indexBuffer	src/edu/hnu/cg/framework/Worker.java	/^	private MappedByteBuffer indexBuffer;$/;"	f	class:Worker	file:
+indexBuffer	src/edu/hnu/cg/graph/Section.java	/^	private MappedByteBuffer indexBuffer;$/;"	f	class:Section	file:
+indexChannel	src/edu/hnu/cg/graph/Section.java	/^	private FileChannel indexChannel;$/;"	f	class:Section	file:
+init	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    public static void init()$/;"	m	class:TestDirectMemoryLayout
+initWorkers	src/edu/hnu/cg/framework/Manager.java	/^	public void initWorkers(){$/;"	m	class:Manager
+insectionEdges	src/edu/hnu/cg/framework/Worker.java	/^	private int[] insectionEdges; \/\/ id offset id offset$/;"	f	class:Worker	file:
+instrumentCodeOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long instrumentCodeOffset = offset += 4;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+intToByteArray	src/edu/hnu/cg/graph/Graph.java	/^	public static byte[] intToByteArray(int val) {$/;"	m	class:Graph
+intToByteArray	src/edu/hnu/cg/test/WriteTest.java	/^	public static byte[] intToByteArray(int i) {$/;"	m	class:WriteTest
+isLoaded	src/edu/hnu/cg/graph/Section.java	/^	public boolean isLoaded() {$/;"	m	class:Section
+isUnloaded	src/edu/hnu/cg/graph/Section.java	/^	public boolean isUnloaded() {$/;"	m	class:Section
+k	src/edu/hnu/cg/framework/Worker.java	/^	private int k;$/;"	f	class:Worker	file:
+lengthsOfWorkerMsgsPool	src/edu/hnu/cg/graph/Graph.java	/^	public static int[] lengthsOfWorkerMsgsPool;$/;"	f	class:Graph
+load	src/edu/hnu/cg/graph/Section.java	/^	public void load() throws IOException {$/;"	m	class:Section
+loaded	src/edu/hnu/cg/graph/Section.java	/^	private volatile boolean loaded = false;$/;"	f	class:Section	file:
+location	src/edu/hnu/cg/graph/Graph.java	/^	private int location(int id) {$/;"	m	class:Graph	file:
+longToByteArray	src/edu/hnu/cg/graph/Graph.java	/^	public static byte[] longToByteArray(long val) {$/;"	m	class:Graph
+longToByteArray	src/edu/hnu/cg/test/WriteTest.java	/^	public static byte[] longToByteArray(long val) {$/;"	m	class:WriteTest
+longs	src/edu/hnu/cg/test/FalseSharing.java	/^    private static long[] longs = new long[NUM_THREADS*15];$/;"	f	class:FalseSharing	file:
+main	src/edu/hnu/cg/graph/Graph.java	/^	public static void main(String[] args) throws IOException {$/;"	m	class:Graph
+main	src/edu/hnu/cg/graph/Section.java	/^	public static void main(String[] args) throws IOException {$/;"	m	class:Section
+main	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public static void main(String[] args){$/;"	m	class:VertexIdTranslate
+main	src/edu/hnu/cg/test/FalseSharing.java	/^    public static void main(final String[] args) throws Exception$/;"	m	class:FalseSharing
+main	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    public static void main(final String[] args)$/;"	m	class:TestDirectMemoryLayout
+main	src/edu/hnu/cg/test/TestMapedByteBuffer.java	/^	public static void main(String[] args) throws IOException{$/;"	m	class:TestMapedByteBuffer
+main	src/edu/hnu/cg/test/WriteTest.java	/^	public static void main(String[] args) throws IOException{$/;"	m	class:WriteTest
+mgr	src/edu/hnu/cg/framework/Worker.java	/^	private Manager mgr;$/;"	f	class:Worker	file:
+mmid	src/edu/hnu/cg/framework/Msg.java	/^	long mmid;$/;"	f	class:Msg
+msgValueTypeBytesToValueConverter	src/edu/hnu/cg/framework/Worker.java	/^	private MsgBytesTovalueConverter<MsgValueType> msgValueTypeBytesToValueConverter;$/;"	f	class:Worker	file:
+msgValueTypeBytesToValueConverter	src/edu/hnu/cg/graph/Graph.java	/^	private BytesToValueConverter<MsgValueType> msgValueTypeBytesToValueConverter;$/;"	f	class:Graph	file:
+msgsCurrent	src/edu/hnu/cg/framework/Worker.java	/^	private byte[] msgsCurrent;$/;"	f	class:Worker	file:
+msgsNext	src/edu/hnu/cg/framework/Worker.java	/^	private byte[] msgsNext; \/\/ buffer msgs comes from other section used for next superstep$/;"	f	class:Worker	file:
+numEdges	src/edu/hnu/cg/graph/Graph.java	/^	private long numEdges = 0;$/;"	f	class:Graph	file:
+numSections	src/edu/hnu/cg/graph/Graph.java	/^	public static int numSections;$/;"	f	class:Graph
+numShards	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    private int numShards;$/;"	f	class:VertexIdTranslate	file:
+numVertices	src/edu/hnu/cg/graph/Graph.java	/^	public static int numVertices;$/;"	f	class:Graph
+numVertices	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final int numVertices = 1000000;$/;"	f	interface:GraphConfig
+numWorkers	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final int numWorkers = 1000000;$/;"	f	interface:GraphConfig
+objectOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private long objectOffset;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+objectSize	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long objectSize = offset += 2;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+oevts	src/edu/hnu/cg/framework/Worker.java	/^	private EdgeValueType[] oevts;$/;"	f	class:Worker	file:
+offset	src/edu/hnu/cg/graph/datablocks/Pointer.java	/^	public int offset;$/;"	f	class:Pointer
+offset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static long offset = 0;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+offsetWidth	src/edu/hnu/cg/graph/Graph.java	/^	public static int offsetWidth;$/;"	f	class:Graph
+outDegree	src/edu/hnu/cg/framework/Worker.java	/^	private int outDegree;$/;"	f	class:Worker	file:
+outDegree	src/edu/hnu/cg/graph/datablocks/VertexDegree.java	/^	public int outDegree;$/;"	f	class:VertexDegree
+outEdges	src/edu/hnu/cg/framework/Worker.java	/^	private int[] outEdges;$/;"	f	class:Worker	file:
+outSectionEdgeCounters	src/edu/hnu/cg/graph/Graph.java	/^	private int[] outSectionEdgeCounters;$/;"	f	class:Graph	file:
+out_degree	src/edu/hnu/cg/graph/Vertex.java	/^	private volatile int out_degree;$/;"	f	class:Vertex	file:
+out_degree_offset	src/edu/hnu/cg/graph/Vertex.java	/^	private static final long out_degree_offset;$/;"	f	class:Vertex	file:
+out_edges	src/edu/hnu/cg/graph/Vertex.java	/^	private int[] out_edges;$/;"	f	class:Vertex	file:
+pack	src/edu/hnu/cg/graph/Graph.java	/^	static long pack(int a, int b) {$/;"	m	class:Graph
+pack	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static int pack(final byte[] value)$/;"	m	class:TestDirectMemoryLayout	file:
+pack	src/edu/hnu/cg/test/WriteTest.java	/^	static long pack(int a, int b) {$/;"	m	class:WriteTest
+partition	src/edu/hnu/cg/graph/Graph.java	/^	private static int partition(long[] arr, byte[] values, int sizeof, int left, int right) {$/;"	m	class:Graph	file:
+partition	src/edu/hnu/cg/test/WriteTest.java	/^	private static int partition(long[] arr ,int left ,int right){$/;"	m	class:WriteTest	file:
+perfRun	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static void perfRun(final int runNum)$/;"	m	class:TestDirectMemoryLayout	file:
+priceOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long priceOffset = offset += 4;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+primitiveArrayCount	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    private int primitiveArrayCount;$/;"	f	class:BufferedDataInputStream	file:
+primitiveArrayRecurse	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int primitiveArrayRecurse(Object o) throws IOException {$/;"	m	class:BufferedDataInputStream
+primitiveEOFThrower	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected void primitiveEOFThrower() throws EOFException {$/;"	m	class:BufferedDataInputStream
+printStatus	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public void printStatus() {$/;"	m	class:BufferedDataInputStream
+process	src/edu/hnu/cg/graph/Graph.java	/^	public void process() throws IOException {$/;"	m	class:Graph
+quantityOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long quantityOffset = offset += 8;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+quickSort	src/edu/hnu/cg/graph/Graph.java	/^	static void quickSort(long arr[], byte[] values, int sizeof, int left, int right) {$/;"	m	class:Graph
+quickSort	src/edu/hnu/cg/test/WriteTest.java	/^	public static void quickSort(long[] arr,int left,int right){$/;"	m	class:WriteTest
+random	src/edu/hnu/cg/graph/Graph.java	/^	private static Random random = new Random();$/;"	f	class:Graph	file:
+random	src/edu/hnu/cg/test/WriteTest.java	/^	private static Random random = new Random();$/;"	f	class:WriteTest	file:
+read	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int read() throws IOException {$/;"	m	class:BufferedDataInputStream
+read	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int read(byte[] buf, int offset, int len) throws IOException {$/;"	m	class:BufferedDataInputStream
+readBoolean	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public boolean readBoolean() throws IOException {$/;"	m	class:BufferedDataInputStream
+readBooleanArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readBooleanArray(boolean[] b) throws IOException {$/;"	m	class:BufferedDataInputStream
+readByte	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public byte readByte() throws IOException {$/;"	m	class:BufferedDataInputStream
+readChar	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public char readChar() throws IOException {$/;"	m	class:BufferedDataInputStream
+readCharArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readCharArray(char[] c) throws IOException {$/;"	m	class:BufferedDataInputStream
+readData	src/edu/hnu/cg/graph/Graph.java	/^	public void readData() throws IOException {$/;"	m	class:Graph
+readDouble	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public double readDouble() throws IOException {$/;"	m	class:BufferedDataInputStream
+readDoubleArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readDoubleArray(double[] d) throws IOException {$/;"	m	class:BufferedDataInputStream
+readEdgeRecord	src/edu/hnu/cg/framework/Worker.java	/^	private  void  readEdgeRecord(byte[] rd,int pos,int len0,int len1,int ts,IntConverter converter,int[] d,EdgeValueType[] v){$/;"	m	class:Worker	file:
+readFloat	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public float readFloat() throws IOException {$/;"	m	class:BufferedDataInputStream
+readFloatArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readFloatArray(float[] f) throws IOException {$/;"	m	class:BufferedDataInputStream
+readFully	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public void readFully(byte[] b) throws IOException {$/;"	m	class:BufferedDataInputStream
+readFully	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public void readFully(byte[] b, int off, int len) throws IOException {$/;"	m	class:BufferedDataInputStream
+readInt	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int readInt() throws IOException {$/;"	m	class:BufferedDataInputStream
+readIntArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readIntArray(int[] i) throws IOException {$/;"	m	class:BufferedDataInputStream
+readIntReversed	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int readIntReversed() throws IOException {$/;"	m	class:BufferedDataInputStream
+readLine	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public String readLine() throws IOException {$/;"	m	class:BufferedDataInputStream
+readLong	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public long readLong() throws IOException {$/;"	m	class:BufferedDataInputStream
+readLongArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readLongArray(long[] l) throws IOException {$/;"	m	class:BufferedDataInputStream
+readPrimitiveArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int readPrimitiveArray(Object o) throws IOException {$/;"	m	class:BufferedDataInputStream
+readRecord	src/edu/hnu/cg/framework/Worker.java	/^	private <T> T readRecord(byte[] arr, int pos, int len, BytesToValueConverter<T> converter) {$/;"	m	class:Worker	file:
+readShort	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public short readShort() throws IOException {$/;"	m	class:BufferedDataInputStream
+readShortArray	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    protected int readShortArray(short[] s) throws IOException {$/;"	m	class:BufferedDataInputStream
+readUTF	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public String readUTF() throws IOException{$/;"	m	class:BufferedDataInputStream
+readUnsignedByte	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int readUnsignedByte() throws IOException {$/;"	m	class:BufferedDataInputStream
+readUnsignedShort	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int readUnsignedShort() throws IOException {$/;"	m	class:BufferedDataInputStream
+receiveEdge	src/edu/hnu/cg/graph/preprocessing/EdgeProcessor.java	/^	EdgeValueType receiveEdge(int from ,int to , String token);$/;"	m	interface:EdgeProcessor
+receiveMessageValue	src/edu/hnu/cg/graph/preprocessing/MessageProcessor.java	/^	MsgValueType receiveMessageValue(int from ,int to,String token);$/;"	m	interface:MessageProcessor
+receiveVertexValue	src/edu/hnu/cg/graph/preprocessing/VertexProcessor.java	/^	ValueType receiveVertexValue(int _id , String token);$/;"	m	interface:VertexProcessor
+record	src/edu/hnu/cg/framework/Worker.java	/^	private byte[] record;$/;"	f	class:Worker	file:
+release	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public void release(int blockId){$/;"	m	class:DataBlockManager
+reset	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public void reset(){$/;"	m	class:DataBlockManager
+resetK	src/edu/hnu/cg/framework/Worker.java	/^	public void resetK() {$/;"	m	class:Worker
+reverseOffset	src/edu/hnu/cg/graph/Graph.java	/^	static long reverseOffset(long offset) {$/;"	m	class:Graph
+reverseOffset	src/edu/hnu/cg/test/WriteTest.java	/^	static long reverseOffset(long offset) {$/;"	m	class:WriteTest
+run	src/edu/hnu/cg/framework/Worker.java	/^	public void run() {$/;"	m	class:Worker
+run	src/edu/hnu/cg/test/FalseSharing.java	/^    public void run()$/;"	m	class:FalseSharing
+runTest	src/edu/hnu/cg/test/FalseSharing.java	/^    private static void runTest() throws InterruptedException$/;"	m	class:FalseSharing	file:
+running	src/edu/hnu/cg/framework/Worker.java	/^	private boolean running = true;$/;"	f	class:Worker	file:
+savedIntByte	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    byte[] savedIntByte = new byte[4]; \/\/ assume single thread$/;"	f	class:BufferedDataInputStream
+sectionAdjWriter	src/edu/hnu/cg/graph/Graph.java	/^	private DataOutputStream[] sectionAdjWriter; \/\/ section的邻接表文件输出流$/;"	f	class:Graph	file:
+sectionFetchIndexWriter	src/edu/hnu/cg/graph/Graph.java	/^	private DataOutputStream[] sectionFetchIndexWriter;$/;"	f	class:Graph	file:
+sectionFile	src/edu/hnu/cg/graph/Section.java	/^	private RandomAccessFile sectionFile;$/;"	f	class:Section	file:
+sectionFilename	src/edu/hnu/cg/graph/Section.java	/^	private String sectionFilename;$/;"	f	class:Section	file:
+sectionShovelWriter	src/edu/hnu/cg/graph/Graph.java	/^	private DataOutputStream[] sectionShovelWriter;$/;"	f	class:Graph	file:
+sectionSize	src/edu/hnu/cg/graph/Graph.java	/^	public static int sectionSize;$/;"	f	class:Graph
+sectionSize	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final int sectionSize = 1000000;$/;"	f	interface:GraphConfig
+sectionVDataWriter	src/edu/hnu/cg/graph/Graph.java	/^	private DataOutputStream[] sectionVDataWriter;\/\/ 存储本section内顶点的value$/;"	f	class:Graph	file:
+sectionVertexValueShovelWriter	src/edu/hnu/cg/graph/Graph.java	/^	private DataOutputStream[] sectionVertexValueShovelWriter;$/;"	f	class:Graph	file:
+sections	src/edu/hnu/cg/framework/Manager.java	/^	private Section[] sections;$/;"	f	class:Manager	file:
+sections	src/edu/hnu/cg/graph/Graph.java	/^	public Section[] sections;$/;"	f	class:Graph
+setClientId	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setClientId(final long clientId)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setId	src/edu/hnu/cg/graph/Vertex.java	/^	public void setId(int _id) {$/;"	m	class:Vertex
+setInstrumentCode	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setInstrumentCode(final int instrumentCode)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setObjectOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        void setObjectOffset(final long objectOffset)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setPrice	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setPrice(final long price)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setQuantity	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setQuantity(final long quantity)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setSide	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setSide(final char side)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setSuperstep	src/edu/hnu/cg/graph/Section.java	/^	public void setSuperstep(int step) {$/;"	m	class:Section
+setTradeId	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setTradeId(final long tradeId)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setValue	src/edu/hnu/cg/graph/Vertex.java	/^	public void setValue(VertexValue val) {$/;"	m	class:Vertex
+setValue	src/edu/hnu/cg/graph/datablocks/BytesToValueConverter.java	/^	public void setValue(byte[] array,T val);$/;"	m	interface:BytesToValueConverter
+setValue	src/edu/hnu/cg/graph/datablocks/FloatConverter.java	/^	public void setValue(byte[] array, Float val) {$/;"	m	class:FloatConverter
+setValue	src/edu/hnu/cg/graph/datablocks/IntConverter.java	/^	public void setValue(byte[] array, Integer val) {$/;"	m	class:IntConverter
+setValue	src/edu/hnu/cg/graph/datablocks/LongConverter.java	/^	public void setValue(byte[] array, Long val) {$/;"	m	class:LongConverter
+setValue	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public void setValue(byte[] array, byte[] val) {$/;"	m	class:Msg
+setVenueCode	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        public void setVenueCode(final int venueCode)$/;"	m	class:TestDirectMemoryLayout.DirectMemoryTrade
+setVertexPtr	src/edu/hnu/cg/graph/Vertex.java	/^	public void setVertexPtr(Pointer _vertexPtr) {$/;"	m	class:Vertex
+sideOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long sideOffset = offset += 8;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+sizeOf	src/edu/hnu/cg/graph/datablocks/BytesToValueConverter.java	/^	public int sizeOf();$/;"	m	interface:BytesToValueConverter
+sizeOf	src/edu/hnu/cg/graph/datablocks/FloatConverter.java	/^	public int sizeOf() {$/;"	m	class:FloatConverter
+sizeOf	src/edu/hnu/cg/graph/datablocks/IntConverter.java	/^	public int sizeOf() {$/;"	m	class:IntConverter
+sizeOf	src/edu/hnu/cg/graph/datablocks/LongConverter.java	/^	public int sizeOf() {$/;"	m	class:LongConverter
+sizeOf	src/edu/hnu/cg/graph/datablocks/MsgConverter.java	/^	public int sizeOf() {$/;"	m	class:Msg
+skip	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public long skip(long offset) throws IOException {$/;"	m	class:BufferedDataInputStream
+skipBytes	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public int skipBytes(int toSkip) throws IOException {$/;"	m	class:BufferedDataInputStream
+stringRepresentation	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    public String stringRepresentation() {$/;"	m	class:VertexIdTranslate
+superstep	src/edu/hnu/cg/framework/Manager.java	/^	private int superstep = 0;$/;"	f	class:Manager	file:
+superstep	src/edu/hnu/cg/graph/Section.java	/^	private int superstep;$/;"	f	class:Section	file:
+superstep_offset	src/edu/hnu/cg/graph/Vertex.java	/^	private static final long superstep_offset;$/;"	f	class:Vertex	file:
+swapBuffer	src/edu/hnu/cg/framework/Worker.java	/^	private void swapBuffer() {$/;"	m	class:Worker	file:
+toString	src/edu/hnu/cg/util/BufferedDataInputStream.java	/^    public String toString() {$/;"	m	class:BufferedDataInputStream
+tradeIdOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long tradeIdOffset = offset += 0;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+unload	src/edu/hnu/cg/graph/Section.java	/^	public void unload() throws IOException {$/;"	m	class:Section
+unloaded	src/edu/hnu/cg/graph/Section.java	/^	private volatile boolean unloaded = false;$/;"	f	class:Section	file:
+unsafe	src/edu/hnu/cg/graph/Vertex.java	/^	public static final Unsafe unsafe = Helper.getUnsafe();$/;"	f	class:Vertex
+unsafe	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^    private static final Unsafe unsafe;$/;"	f	class:TestDirectMemoryLayout	file:
+val	src/edu/hnu/cg/framework/Msg.java	/^	MsgValueType val;$/;"	f	class:Msg
+val	src/edu/hnu/cg/framework/Worker.java	/^	private VertexValueType val;$/;"	f	class:Worker	file:
+value	src/edu/hnu/cg/test/FalseSharing.java	/^        public volatile long value = 0L;$/;"	f	class:FalseSharing.VolatileLong
+valueOffset	src/edu/hnu/cg/framework/Worker.java	/^	private int valueOffset;$/;"	f	class:Worker	file:
+valueSize	src/edu/hnu/cg/graph/Section.java	/^	private long valueSize;$/;"	f	class:Section	file:
+value_offset	src/edu/hnu/cg/graph/Vertex.java	/^	private static final long value_offset;$/;"	f	class:Vertex	file:
+venueCodeOffset	src/edu/hnu/cg/test/TestDirectMemoryLayout.java	/^        private static final long venueCodeOffset = offset += 8;$/;"	f	class:TestDirectMemoryLayout.DirectMemoryTrade	file:
+verterxValueTypeBytesToValueConverter	src/edu/hnu/cg/graph/Graph.java	/^	private BytesToValueConverter<VertexValueType> verterxValueTypeBytesToValueConverter;$/;"	f	class:Graph	file:
+vertexDataBuffer	src/edu/hnu/cg/graph/Section.java	/^	private MappedByteBuffer vertexDataBuffer;$/;"	f	class:Section	file:
+vertexDataFile	src/edu/hnu/cg/graph/Section.java	/^	private RandomAccessFile vertexDataFile;$/;"	f	class:Section	file:
+vertexDataFileChannel	src/edu/hnu/cg/graph/Section.java	/^	private FileChannel vertexDataFileChannel;$/;"	f	class:Section	file:
+vertexDataFilename	src/edu/hnu/cg/graph/Section.java	/^	private String vertexDataFilename;$/;"	f	class:Section	file:
+vertexInfoBuffer	src/edu/hnu/cg/framework/Worker.java	/^	private MappedByteBuffer vertexInfoBuffer;$/;"	f	class:Worker	file:
+vertexInfoFileChannel	src/edu/hnu/cg/graph/Section.java	/^	private FileChannel vertexInfoFileChannel;$/;"	f	class:Section	file:
+vertexInformationBuffer	src/edu/hnu/cg/graph/Section.java	/^	private MappedByteBuffer vertexInformationBuffer;$/;"	f	class:Section	file:
+vertexIntervalLength	src/edu/hnu/cg/graph/VertexIdTranslate.java	/^    private int vertexIntervalLength;$/;"	f	class:VertexIdTranslate	file:
+vertexProcessor	src/edu/hnu/cg/graph/Graph.java	/^	private VertexProcessor<VertexValueType> vertexProcessor;$/;"	f	class:Graph	file:
+vertexPtr	src/edu/hnu/cg/graph/Vertex.java	/^	private Pointer vertexPtr;$/;"	f	class:Vertex	file:
+vertexToEdgeSeparate	src/edu/hnu/cg/graph/Graph.java	/^	private static final String vertexToEdgeSeparate = ":";$/;"	f	class:Graph	file:
+vertexToEdgesSep	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final String vertexToEdgesSep = "->";$/;"	f	interface:GraphConfig
+vertexValueConverter	src/edu/hnu/cg/graph/Vertex.java	/^	public static BytesToValueConverter vertexValueConverter;$/;"	f	class:Vertex
+vertexValueTemplate	src/edu/hnu/cg/graph/Graph.java	/^	private byte[] vertexValueTemplate;$/;"	f	class:Graph	file:
+vertexValueTypeBytesToValueConverter	src/edu/hnu/cg/framework/Worker.java	/^	private BytesToValueConverter<VertexValueType> vertexValueTypeBytesToValueConverter;$/;"	f	class:Worker	file:
+vertex_id_offset	src/edu/hnu/cg/graph/Vertex.java	/^	private static final long vertex_id_offset;$/;"	f	class:Vertex	file:
+verticesToWoker	src/edu/hnu/cg/graph/userdefine/GraphConfig.java	/^	public static final int verticesToWoker = 5;$/;"	f	interface:GraphConfig
+vid	src/edu/hnu/cg/framework/Worker.java	/^	private int vid;$/;"	f	class:Worker	file:
+vidToValue	src/edu/hnu/cg/graph/Graph.java	/^	private long vidToValue(String part) {$/;"	m	class:Graph	file:
+workers	src/edu/hnu/cg/framework/Manager.java	/^	private Worker[] workers;$/;"	f	class:Manager	file:
+writeValue	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public <T> void writeValue(Pointer ptr,BytesToValueConverter<T> conv,T value){$/;"	m	class:DataBlockManager
+writeValue	src/edu/hnu/cg/graph/datablocks/DataBlockManager.java	/^	public <T> void writeValue(Pointer ptr,byte[] arr){$/;"	m	class:DataBlockManager
