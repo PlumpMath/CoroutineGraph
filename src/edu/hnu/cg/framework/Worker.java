@@ -2,6 +2,10 @@ package edu.hnu.cg.framework;
 
 import java.nio.MappedByteBuffer;
 
+import kilim.Pausable;
+import kilim.Scheduler;
+import kilim.Task;
+
 import edu.hnu.cg.graph.Graph;
 import edu.hnu.cg.graph.Section;
 import edu.hnu.cg.graph.datablocks.BytesToValueConverter;
@@ -10,7 +14,7 @@ import edu.hnu.cg.graph.datablocks.IntConverter;
 import edu.hnu.cg.graph.datablocks.MsgBytesTovalueConverter;
 import edu.hnu.cg.graph.userdefine.GraphConfig;
 
-public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread {
+public class Worker<VertexValueType extends Number, EdgeValueType extends Number, MsgValueType> extends Task {
 
 	private byte[] valueTemplate;
 
@@ -18,7 +22,7 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 	private int k; // worker : vertices
 	private byte[] record;
 
-	private Manager<?, ?, ?> mgr;
+	private Manager<VertexValueType, EdgeValueType, MsgValueType> mgr;
 	private Section currentSection;
 	@SuppressWarnings("rawtypes")
 	private Handler handler;
@@ -32,10 +36,12 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 	private MappedByteBuffer indexBuffer;
 
 	private DataBlockManager dataBlockManager;
+	private Scheduler scheduler;
 
-	/* 顶点信息* */
-	// record : length , vid , valueoffset len1-> vid , weight , offset -> len2
-	// ...
+	/** 顶点信息
+	 *  record : length , vid , valueoffset len1-> vid , weight , offset -> len2
+	 * 
+	 */
 	private int vid;
 	private VertexValueType val;
 	private int valueOffset;
@@ -48,12 +54,19 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 	private int[] outEdges;
 	private EdgeValueType[] oevts;
 
-	public Worker(int id, Manager<?, ?, ?> mgr,
+	private byte[] msgBuff;
+	private int buffLen;
+	
+	
+	private int superstep = 0;
+
+	public Worker(int id, Manager<VertexValueType, EdgeValueType, MsgValueType> mgr, 
 			Handler<VertexValueType, EdgeValueType, MsgValueType> handler,
-			MsgBytesTovalueConverter<MsgValueType> msgConverter,
+			MsgBytesTovalueConverter<MsgValueType> msgConverter, 
 			BytesToValueConverter<VertexValueType> vertexValueTypeBytesToValueConverter,
-			BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter,
-			DataBlockManager dataBlockManager) {
+			BytesToValueConverter<EdgeValueType> edgeValueTypeBytesToValueConverter, 
+			DataBlockManager dataBlockManager, int buffLen,int superstep) {
+		
 		this.id = id;
 		this.mgr = mgr;
 		this.handler = handler;
@@ -64,15 +77,27 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 		if (vertexValueTypeBytesToValueConverter != null) {
 			valueTemplate = new byte[vertexValueTypeBytesToValueConverter.sizeOf()];
 		}
+
+		this.buffLen = buffLen;
+		this.superstep = superstep;
+		scheduler = Scheduler.getDefaultScheduler();
 	}
 
 	private boolean running = true;
 
+	private void loadBuff() {
+		if (msgBuff == null)
+			msgBuff = new byte[buffLen];
+		System.arraycopy(dataBlockManager.getRawBlock(id), 0, msgBuff, 0, buffLen);
+	}
+
 	@SuppressWarnings("unchecked")
-	public void run() {
+	@Override
+	public void execute() throws Pausable {
 
 		while (running) {
-			if (currentSection == null) {
+
+			while (currentSection == null) {
 				currentSection = mgr.getCurrentSection();
 			}
 
@@ -84,8 +109,7 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 			// 计算本section内的消息
 			for (int i = 0; i < inSectionInDegree; i++) {
 				byte[] msg = getMsg(insectionEdges[2 * i + 1]);
-				val = (VertexValueType) handler.compute(msgConverter.getFrom(msg),
-						msgConverter.getTo(msg), val, msgConverter.getValue(msg));
+				val = (VertexValueType) handler.compute(msgConverter.getFrom(msg), msgConverter.getTo(msg), val, msgConverter.getValue(msg));
 			}
 
 			// 计算来自section外的消息
@@ -103,15 +127,13 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 						current = from;
 
 					if (from == current && to == vid) {
-						val = (VertexValueType) handler.compute(from, to, val,
-								msgConverter.getValue(msg));
+						val = (VertexValueType) handler.compute(from, to, val, msgConverter.getValue(msg));
 						i += msgConverter.sizeOf();
 					} else {
 						if (i != 0) {
 							if (from != current) {
 								if (i % GraphConfig.cachelineSize == 0) {
-									val = (VertexValueType) handler.compute(from, to, val,
-											msgConverter.getValue(msg));
+									val = (VertexValueType) handler.compute(from, to, val, msgConverter.getValue(msg));
 									i += msgConverter.sizeOf();
 									current = from;
 								} else {
@@ -119,8 +141,7 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 									System.arraycopy(buff, i, msg, 0, msgConverter.sizeOf());
 									from = msgConverter.getFrom(msg);
 									to = msgConverter.getTo(msg);
-									val = (VertexValueType) handler.compute(from, to, val,
-											msgConverter.getValue(msg));
+									val = (VertexValueType) handler.compute(from, to, val, msgConverter.getValue(msg));
 									i += msgConverter.sizeOf();
 								}
 							}
@@ -133,6 +154,8 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 			// 更新顶点的value值
 			vertexValueTypeBytesToValueConverter.setValue(valueTemplate, val);
 			dataBuffer.put(valueTemplate, valueOffset, valueTemplate.length);
+			
+			
 
 			// 同步点
 			// 代码TO DO
@@ -141,10 +164,14 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 			for (int i = 0; i < outDegree; i++) {
 				int to = outEdges[2 * i];
 				byte[] msg = handler.genMessage(vid, to, val, oevts[i]);
-				if (forward(vid) == forward(to))
+				int workerId = location(to);
+				if (forward(vid) == forward(to)){
+					mgr.getWorker(workerId).combineMessage(msg);
 					eDataBuffer.put(msg, outEdges[2 * i + 1], msg.length);
+					
+				}
 				else {
-					int workerId = location(to);
+					
 					mgr.getWorker(workerId).putMessage(workerId, msg, outEdges[2 * i + 1]);
 				}
 			}
@@ -152,6 +179,16 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 
 		// 卸载分区，载入下一个分区
 
+	}
+	
+	private byte[] combine;
+	private Combiner combiner;
+	private synchronized void combineMessage(byte[] msg){
+		if(msg == null) combine = msg;
+		else{
+			combiner.combine(combine, msg);
+		}
+		
 	}
 
 	private void putMessage(int workerId, byte[] msg, int offset) {
@@ -179,11 +216,17 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 		return data;
 	}
 
+	/**
+	 * 解析二进制record
+	 * 
+	 * @param rd
+	 *            : 二进制顶点邻接数据
+	 * 
+	 * */
 	@SuppressWarnings("unchecked")
 	private void extractRecord(byte[] rd) {
 
-		int sizeof = edgeValueTypeBytesToValueConverter == null ? 0
-				: edgeValueTypeBytesToValueConverter.sizeOf();
+		int sizeof = edgeValueTypeBytesToValueConverter == null ? 0 : edgeValueTypeBytesToValueConverter.sizeOf();
 		IntConverter inc = new IntConverter();
 
 		int len = rd.length;
@@ -248,8 +291,7 @@ public class Worker<VertexValueType, EdgeValueType, MsgValueType> extends Thread
 	 * 
 	 * */
 
-	private void readEdgeRecord(byte[] rd, int pos, int len, int ts, IntConverter converter,
-			int[] d, EdgeValueType[] v) {
+	private void readEdgeRecord(byte[] rd, int pos, int len, int ts, IntConverter converter, int[] d, EdgeValueType[] v) {
 		byte[] tmp = new byte[4];
 		byte[] edge = new byte[len];
 

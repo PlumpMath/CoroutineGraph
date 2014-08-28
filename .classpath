@@ -2,5 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/doro/workspace/CoroutineGraph/libs/asm-all-4.1.jar"/>
+	<classpathentry kind="lib" path="/home/doro/workspace/CoroutineGraph/libs/fst-1.58-onejar.jar"/>
+	<classpathentry kind="lib" path="/home/doro/workspace/CoroutineGraph/libs/kilim.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

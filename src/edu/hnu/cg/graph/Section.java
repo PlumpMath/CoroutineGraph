@@ -13,8 +13,8 @@ import java.security.PrivilegedAction;
 public class Section {
 
 	private int id;
-	private int superstep;
 
+	private String graphFilename;
 	private String sectionFilename;
 	private String vertexDataFilename;
 	private String edgeDataFilename;
@@ -22,7 +22,6 @@ public class Section {
 
 	private long valueSize;
 	private long edataSize;
-	
 
 	private RandomAccessFile sectionFile;
 	private MappedByteBuffer vertexInformationBuffer;
@@ -43,27 +42,11 @@ public class Section {
 	private volatile boolean loaded = false;
 	private volatile boolean unloaded = false;
 
-	public Section(int _id, String graphFiename, long vsize, long esize) throws IOException {
+	public Section(int _id, String graphFilename, long vsize, long esize) throws IOException {
 		id = _id;
-		superstep = 0;
+		this.graphFilename = graphFilename;
 		valueSize = vsize;
 		edataSize = esize;
-		
-
-		sectionFilename = Filename.getSectionFilename(graphFiename, id);
-		vertexDataFilename = Filename.getSectionVertexDataFilename(graphFiename, id);
-		edgeDataFilename = Filename.getSectionEdgeDataFilename(graphFiename, id, superstep);
-		fetchIndexFilename = Filename.getSectionFetchIndexFilename(graphFiename, id);
-
-		sectionFile = new RandomAccessFile(sectionFilename, "r");
-		vertexDataFile = new RandomAccessFile(vertexDataFilename, "rw");
-		edgeDataFile = new RandomAccessFile(edgeDataFilename, "rw");
-		fetchIndexFile = new RandomAccessFile(fetchIndexFilename, "r");
-
-	}
-
-	public void setSuperstep(int step) {
-		superstep = step;
 	}
 
 	// if this method is called , null pointer needed to be checked
@@ -78,11 +61,15 @@ public class Section {
 	public MappedByteBuffer getEdgeDataBuffer() {
 		return edgeDataBuffer;
 	}
+
 	public MappedByteBuffer getIndexBuffer() {
 		return indexBuffer;
 	}
 
-	public void load() throws IOException {
+	public void load(int superstep) throws IOException {
+
+		sectionFilename = Filename.getSectionFilename(graphFilename, id);
+		sectionFile = new RandomAccessFile(sectionFilename, "r");
 		// 载入section信息文件
 		if (sectionFile != null) {
 			vertexInfoFileChannel = sectionFile.getChannel();
@@ -92,6 +79,8 @@ public class Section {
 			return;
 		}
 
+		fetchIndexFilename = Filename.getSectionFetchIndexFilename(graphFilename, id);
+		fetchIndexFile = new RandomAccessFile(fetchIndexFilename, "r");
 		if (fetchIndexFile != null) {
 			indexChannel = fetchIndexFile.getChannel();
 			indexBuffer = indexChannel.map(MapMode.READ_ONLY, 0, fetchIndexFile.length());
@@ -99,7 +88,8 @@ public class Section {
 		} else {
 			return;
 		}
-
+		vertexDataFilename = Filename.getSectionVertexDataFilename(graphFilename, id);
+		vertexDataFile = new RandomAccessFile(vertexDataFilename, "rw");
 		// 载入顶点value数据文件
 		if (vertexDataFile != null) {
 			if (vertexDataFile.length() == 0) {
@@ -116,6 +106,8 @@ public class Section {
 			return;
 		}
 
+		edgeDataFilename = Filename.getSectionEdgeDataFilename(graphFilename, id, superstep);
+		edgeDataFile = new RandomAccessFile(edgeDataFilename, "rw");
 		if (edgeDataFile != null) {
 			if (edgeDataFile.length() == 0) {
 				edgeDataFileChannel = edgeDataFile.getChannel();
@@ -131,6 +123,15 @@ public class Section {
 		}
 
 		loaded = true;
+		sectionFile.close();
+		vertexDataFile.close();
+		edgeDataFile.close();
+		fetchIndexFile.close();
+
+		vertexInfoFileChannel.close();
+		vertexDataFileChannel.close();
+		edgeDataFileChannel.close();
+		indexChannel.close();
 
 	}
 
@@ -162,16 +163,6 @@ public class Section {
 		vertexDataBuffer.force();
 		edgeDataBuffer.force();
 
-		sectionFile.close();
-		vertexDataFile.close();
-		edgeDataFile.close();
-		fetchIndexFile.close();
-
-		vertexInfoFileChannel.close();
-		vertexDataFileChannel.close();
-		edgeDataFileChannel.close();
-		indexChannel.close();
-
 		clean(vertexInformationBuffer);
 		clean(vertexDataBuffer);
 		clean(edgeDataBuffer);
@@ -188,15 +179,13 @@ public class Section {
 
 	public static void main(String[] args) throws IOException {
 		Section section = new Section(0, "/home/doro/CG/google", 473524992, 73094740);
-		section.load();
-		for(int k=0;k<100;k++){
-			section.indexBuffer.get(k*10);
+		for (int k = 0; k < 100; k++) {
+			section.indexBuffer.get(k * 10);
 			System.out.println(section.indexBuffer.position());
 		}
-			
 
 		int i = 0;
-		while (section.vertexInformationBuffer.remaining() >0) {
+		while (section.vertexInformationBuffer.remaining() > 0) {
 			int len = section.vertexInformationBuffer.getInt();
 			System.out.print("Recorde " + i + " : " + len + ",");
 			int vid = section.vertexInformationBuffer.getInt();
@@ -213,7 +202,7 @@ public class Section {
 			}
 			System.out.println();
 			i++;
-			
+
 		}
 
 		section.unload();

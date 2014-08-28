@@ -233,7 +233,7 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 			shovelFile.delete();
 			quickSort(edges, edgeValues, sizeof, 0, edges.length - 1);
 
-			// 本来应该使用long，这里使用int是为了节省空间
+			// 本来应该使用long，这里使用int节省空间
 			int currentInSectionOffset = 0;
 			int valueOffset = 0;
 			int fetchIndex = 0;
@@ -642,5 +642,9 @@ public class Graph<VertexValueType extends Number, EdgeValueType extends Number,
 		 * 
 		 * graph.XXXX();
 		 */
+	}
+
+	public String getGraphFilename() {
+		return graphFilename;
 	}
 }
